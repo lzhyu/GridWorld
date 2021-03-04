@@ -6,8 +6,6 @@ If you want to extend the game,please inherit FourroomsBaseState and FourroomsBa
 
 Some design principles,extension advice and test information can be seen in fourrooms_coin_norender.py.
 
-NOTE:loading and saving is not well-tested.
-
 """
 import numpy as np
 import gym
