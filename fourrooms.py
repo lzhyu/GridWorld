@@ -4,7 +4,7 @@ This script contains a basic version of Fourrooms.
 
 If you want to extend the game,please inherit FourroomsBaseState and FourroomsBase.
 
-Some design principles,extension advice and test information can be seen in fourrooms_coin_norender.py.
+Some design principles,extension advice and test information can be seen in fourrooms_coin.py.
 
 """
 import numpy as np

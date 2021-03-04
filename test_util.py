@@ -1,3 +1,8 @@
+'''
+Test scripts:
+- check_render(env):check rendering
+- check_run(env):random run
+'''
 import cv2
 import os
 def check_render(env):

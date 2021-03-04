@@ -18,18 +18,10 @@ Design principles:
 Some possible extensions:
 - To change render colors or add background noises,rewrite render functions.
 NOTE:ANY change of layout size should accompany a redefination of observation_space or obs_height and obs width.
-
 - To add enemys,inherit FourroomsCoin.
-- To change game layout,rewrite init_layout.
+- To change game layout,rewrite init_layout in fourrooms.py.
 - This file includes extension examples: FourroomsCoinBackgroundNoise and FourroomsCoinRandomNoise.
-
-------
-Test scripts:
-- check_render(env):check rendering
-- check_env(env):imported from stable_baselines,check whether it follows gym interface
-- check_run(env):random run
-- I also try to train an agent with stable_baselines to check the difficulty and reasonability of game.
-
+- To add randomness, change self.random.
 """
 
 import gym
@@ -186,7 +178,7 @@ class FourroomsCoin(FourroomsNorender):
         pass
 
 class FourroomsCoinNorender(FourroomsCoin):
-    def __init__(self, max_epilen=100, goal=None, num_coins=1,seed=0):
+    def __init__(self, max_epilen=100, goal=None, num_coins=3,seed=0):
         super().__init__(max_epilen=max_epilen, goal=goal, num_coins=num_coins,seed=seed)
 
     def render(self, mode=0):
@@ -309,6 +301,7 @@ obs[padding_height:padding_height+arr.shape[0],padding_width:padding_width+arr.s
         new_obs=self.resize_obs(obs).astype(np.uint8)
         
         return new_obs
+
     def resize_obs(self,obs):
         """
         Resize observation array to [0,255]
@@ -323,7 +316,8 @@ obs[padding_height:padding_height+arr.shape[0],padding_width:padding_width+arr.s
 if __name__=='__main__':
 
     #basic test
-    env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
+    #env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
+    env=ImageInputWarpper(FourroomsKidNoise())
     check_render(env)
     
     check_run(env)

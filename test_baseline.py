@@ -1,3 +1,9 @@
+'''
+Test scripts:
+- check_env(env):imported from stable_baselines,check whether it follows gym interface
+- I also try to train an agent with stable_baselines to check the difficulty and reasonability of game.
+'''
+
 from stable_baselines.common.env_checker import check_env
 from stable_baselines.common.vec_env import VecFrameStack
 from stable_baselines import ACER,A2C,ACKTR
