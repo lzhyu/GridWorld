@@ -41,7 +41,7 @@ Gridworld with background dynamic noise and a irrelevant dark block.
 
 `fourrooms.py`and `fourrooms_coin.py` define two main game classes.Some details are in the beginning of the program files.
 
-`test_util.py` and `test_baseline.py` both provide some test scripts,where `test_baseline.py` is based on [Stable Baselines]https://github.com/hill-a/stable-baselines.
+`test_util.py` and `test_baseline.py` both provide some test scripts,where `test_baseline.py` is based on [Stable Baselines](https://github.com/hill-a/stable-baselines).
 
 `value_iteration.py` can provide knowledge about the game. It has only been implemented for non-coin and one-coin cases.
 
