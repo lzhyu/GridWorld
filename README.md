@@ -19,23 +19,23 @@ Some noise might be added to increase the difficulty,see `fourrooms_coin.py` for
 #### Demo
 Girdworld with an agent and a goal.(basic version)
 
-<img src="./demo0.jpg">
+<img src="./demo/demo0.jpg">
 
 Girdworld with a coin.
 
-<img src="./demo1.jpg">
+<img src="./demo/demo1.jpg">
 
 Girdworld with more coins.
 
-<img src="./demo2.jpg">
+<img src="./demo/demo2.jpg">
 
 Gridworld with background dynamic noise.
 
-<img src="./demo3.jpg">
+<img src="./demo/demo3.jpg">
 
 Gridworld with background dynamic noise and a irrelevant dark block.
 
-<img src="./demo4.jpg">
+<img src="./demo/demo4.jpg">
 
 #### Specifics
 
