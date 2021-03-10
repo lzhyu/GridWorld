@@ -33,7 +33,7 @@ Gridworld with background dynamic noise.
 
 <img src="./demo/demo3.jpg">
 
-Gridworld with background dynamic noise and a irrelevant dark block.
+Gridworld with background dynamic noise and an irrelevant dark block.
 
 <img src="./demo/demo4.jpg">
 
