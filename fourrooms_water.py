@@ -126,7 +126,7 @@ class FourroomsWater(FourroomsCoinNorender):
                 if self.not_block(water):
                     break
             if water is not None:
-                np.append(water_list, water)
+                water_list = np.append(water_list, water)
                 self.init_states.remove(water)
                 state_list = deepcopy(self.init_states)
             else:
@@ -150,7 +150,7 @@ class FourroomsWaterNorender(FourroomsWater):
         for coin, count in self.state.coin_dict.items():
             x, y = self.tocell[coin]
             if count[1]:  # exist
-                blocks.append(self.make_block(x, y, (1, 1, 0)))
+                blocks.append(self.make_block(x, y, (0, 1, 1)))
         blocks.extend(self.make_basic_blocks())
 
         arr = self.render_with_blocks(self.origin_background, blocks)
@@ -159,6 +159,12 @@ class FourroomsWaterNorender(FourroomsWater):
     def render(self, **kwargs):
         blocks = []
         return self.render_water_blocks(blocks)
+
+def seeimg(img):
+    cv2.startWindowThread()
+    cv2.imshow('img', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
