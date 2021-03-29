@@ -308,8 +308,9 @@ class FourroomsNorender(FourroomsBase):
             # blocks.append(self.make_block(x, y, self.agent_color[np.random.randint(100)]))
             blocks.append(self.make_block(x, y, (0, 0, 1)))
         # render goal
-        x, y = self.tocell[self.state.goal_n]
-        blocks.append(self.make_block(x, y, (1, 0, 0)))
+        if self.state.position_n != self.state.goal_n:
+            x, y = self.tocell[self.state.goal_n]
+            blocks.append(self.make_block(x, y, (1, 0, 0)))
         return blocks
 
     def render_with_blocks(self, background, blocks) -> np.array:
