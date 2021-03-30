@@ -164,7 +164,6 @@ class FourroomsWater(FourroomsCoinNorender):
             self.Model['action'] = np.random.choice(['normal', 'left', 'right', 'inverse'])
             self.Model['extra step'] = np.random.choice(['stay', 'left', 'right', 'forward'])
         descr = self.todescr(self.Model)
-        print(descr)
         self.state.descr = descr
         return self.state.to_obs()
 
@@ -174,7 +173,7 @@ class FourroomsWater(FourroomsCoinNorender):
         descr = []
         for s, t in Model.items():
             descr.append(s + ': ' + t)
-        return descr
+        return tuple(descr)
 
     @staticmethod
     def turn(transfer, direction):
@@ -203,6 +202,8 @@ class FourroomsWater(FourroomsCoinNorender):
             if extra:
                 transfer = self.turn(transfer, self.Model['action'])
             else:
+                if self.Model['extra step'] == 'stay':
+                    return cell, coin_get
                 transfer = self.turn(transfer, self.Model['extra step'])
         next_cell = tuple(cell + transfer)
         if self.occupancy[next_cell]:
