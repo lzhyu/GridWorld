@@ -194,7 +194,7 @@ class FourroomsWater(FourroomsCoinNorender):
             pass
         return transfer
 
-    def model_step(self, cell, transfer, extra=1, push=0, coin_get=[]):
+    def model_step(self, cell, transfer, extra=1, push=0, coin_get=[], push_num=0):
         # Help for self.step and debugging, return next_cell, coin_git
         if coin_get is None:
             coin_get = []
@@ -214,18 +214,23 @@ class FourroomsWater(FourroomsCoinNorender):
                     next_cell = cell
                     return next_cell, coin_get
                 else:
-                    transfer = self.turn(transfer, self.Model['water'])
-                    return self.model_step(next_cell, transfer, extra, 1, coin_get)
+                    if push_num < 4:
+                        transfer = self.turn(transfer, self.Model['water'])
+                        return self.model_step(next_cell, transfer, extra, 1, coin_get, push_num+1)
+                    else:
+                        pass
             else:
                 next_cell = cell
                 return next_cell, coin_get
-        elif self.state.coin_dict.get(self.tostate[next_cell], (0, False))[1]:
+        elif self.state.coin_dict.get(self.tostate[next_cell], (0, False))[1] and\
+                self.tostate[next_cell] not in coin_get:
             coin_get.append(self.tostate[next_cell])
             if self.Model['coin'] == 'pass':
                 pass
             else:
-                transfer = self.turn(transfer, self.Model['coin'])
-                return self.model_step(next_cell, transfer, extra, 1, coin_get)
+                if push_num < 4:
+                    transfer = self.turn(transfer, self.Model['coin'])
+                    return self.model_step(next_cell, transfer, extra, 1, coin_get, push_num+1)
         if extra:
             return self.model_step(next_cell, transfer, 0, 0, coin_get)
         return next_cell, coin_get
