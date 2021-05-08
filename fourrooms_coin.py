@@ -24,17 +24,10 @@ NOTE:ANY change of layout size should accompany a redefination of observation_sp
 - To add randomness, change self.random.
 """
 
-import gym
-import time
-from gym import error, core, spaces
-from gym.envs.registration import register
-import random
-import numpy as np
 from fourrooms import *
 from wrappers import ImageInputWarpper
 from copy import deepcopy
 import abc
-import cv2
 import time
 from test_util import *
 
@@ -303,14 +296,7 @@ class FourroomsKidNoise(FourroomsCoinNorender):
 
         padding_height, padding_width = (obs.shape[0] - arr.shape[0]) // 2, (obs.shape[1] - arr.shape[1]) // 2
         obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr - \
-                                                                                                           obs[
-                                                                                                           padding_height:padding_height +
-                                                                                                                          arr.shape[
-                                                                                                                              0],
-                                                                                                           padding_width:padding_width +
-                                                                                                                         arr.shape[
-                                                                                                                             1],
-                                                                                                           :]
+            obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :]
         # background:[0,16]
         # obs:[0,255+16]
 

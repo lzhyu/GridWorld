@@ -29,18 +29,9 @@ Length-variable discription
 Variable action space
 """
 
-import gym
-import time
-from gym import error, core, spaces
-from gym.envs.registration import register
-import random
-import numpy as np
-from fourrooms import *
 from fourrooms_coin import *
 from wrappers import ImageInputWarpper
 from copy import deepcopy
-import abc
-import cv2
 from test_util import *
 
 
@@ -261,7 +252,6 @@ class FourroomsWater(FourroomsCoinNorender):
         info = {}
         if self.state.done:
             info = {'episode': {'r': np.sum(self.state.cum_reward), 'l': self.state.current_steps}}
-            self.state.cum_reward = []
 
         return self.state.to_obs(), reward, self.state.done, info
 

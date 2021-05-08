@@ -37,9 +37,17 @@ Gridworld with background dynamic noise and an irrelevant dark block.
 
 <img src="./demo/demo4.jpg">
 
+Gridworld with coins, waters which act as obstacles, and more complex dynamics shown to the agent by a piece of discription. It's not guaranteed that the agent can reach the goal now (to be completed). Note when rendering, coins are golden and waters are green.
+
+<img src="./test_render/test0.jpg">
+
+
+
 #### Specifics
 
 `fourrooms.py`and `fourrooms_coin.py` define two main game classes.Some details are in the beginning of the program files.
+
+`fourrooms_water.py` defines the game with waters and complex dynamics.
 
 `test_util.py` and `test_baseline.py` both provide some test scripts.`test_baseline.py` is based on [Stable Baselines](https://github.com/hill-a/stable-baselines).
 
@@ -55,5 +63,6 @@ Then you can use the environment without installation of `tensorflow` and `Stabl
 
 #### Unfinished work
 - Finish stable baseline test.
-
 - Add a pygame-like interface.
+- More complex dynamics, such as more extra steps.
+
