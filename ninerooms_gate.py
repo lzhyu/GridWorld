@@ -87,6 +87,12 @@ class NineroomsGate(NineroomsNorender):
         descr += ('purple' + ': ' + self.Model['gate C'] + '.')
         return descr
 
+    def rand_model(self):
+        self.Model['action'] = np.random.choice(['normal', 'left', 'right', 'inverse'])
+        self.Model['extra step'] = np.random.choice(['stay', 'left', 'right', 'forward'])
+        for key in ['gate A', 'gate B', 'gate C']:
+            self.Model[key] = np.random.choice(['coin', 'wall', 'water'])
+
     def reset(self):
         # If init_random and goal_random, init pos and goal is in diff & random outer rooms.
         # If gate_random, no empty gate will assigned.
@@ -97,10 +103,7 @@ class NineroomsGate(NineroomsNorender):
                 self.gatedict[pos_n] = np.random.choice(['gate A', 'gate B', 'gate C'])
 
         if self.model_random:
-            self.Model['action'] = np.random.choice(['normal', 'left', 'right', 'inverse'])
-            self.Model['extra step'] = np.random.choice(['stay', 'left', 'right', 'forward'])
-            for key in ['gate A', 'gate B', 'gate C']:
-                self.Model[key] = np.random.choice(['coin', 'wall', 'water'])
+            self.rand_model()
 
         init_rooms = [0, 1, 2, 3, 5, 6, 7, 8]
         if self.init_random:
@@ -186,7 +189,10 @@ class NineroomsGate(NineroomsNorender):
         # else get an empty gird or the goal gird, not viewed reach the goal
 
         if not finish and self.Model['extra step'] == 'stay':
-            if get_penalty:
+            if nextpos == self.state.goal_n:
+                done = True
+                reward += 10
+            elif get_penalty:
                 reward += self.penalty(nextpos)
             self.state.position_n = nextpos
             finish = True
@@ -195,7 +201,10 @@ class NineroomsGate(NineroomsNorender):
             extra_transfer = self.turn(transfer, self.Model['extra step'])
             extrapos = self.basic_step(nextpos, extra_transfer)
             if extrapos == nextpos or (extrapos in gates_pos and self.Model.get(self.gatedict[extrapos], 'empty') == 'wall'):
-                if get_penalty:
+                if nextpos == self.state.goal_n:
+                    done = True
+                    reward += 10
+                elif get_penalty:
                     reward += self.penalty(nextpos)
                 self.state.position_n = nextpos
                 finish = True
