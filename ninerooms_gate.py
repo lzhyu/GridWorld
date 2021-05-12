@@ -25,6 +25,7 @@ reward:
 from ninerooms import *
 from ninerooms_util import *
 import numpy as np
+from test_util import *
 
 class NineroomsGateState(NineroomsBaseState):
     def __init__(self, position_n, current_steps, goal_n, done, num_pos, gatedict, cum_reward: list, descr=None):
@@ -66,7 +67,7 @@ class NineroomsGate(NineroomsNorender):
         if init_pos is None:
             self.init_random = True
         else:
-            self.init_pos = False
+            self.init_random = False
 
         if goal is None:
             self.goal_random = True
@@ -122,7 +123,6 @@ class NineroomsGate(NineroomsNorender):
         self.state = NineroomsGateState(position_n=init_pos_n, current_steps=0, goal_n=goal_pos_n, done=False,
                                         num_pos=self.num_pos, gatedict=self.gatedict, cum_reward=[],
                                         descr=self.to_descr())
-        print(self.state.descr)
         return self.state.to_obs()
 
     def basic_step(self, pos, transfer):
@@ -257,4 +257,11 @@ class NineroomsGateNorender(NineroomsGate):
 
         arr = self.render_with_blocks(self.origin_background, blocks)
         return arr
+
+
+if __name__ == '__main__':
+    env = ImageInputWarpper(NineroomsGateNorender())
+    check_render(env)
+    check_run(env)
+    print('check finished.')
 
