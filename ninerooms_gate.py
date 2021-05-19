@@ -15,17 +15,28 @@ Model: {
 }
 
 reward:
-    default penalty: -0.1
-    penalty in the corridor: -0.2
+    penalty: -0.1
     coin gate: 1 (would be eaten)
     water gate: -1 (-0.1 if stay at water, and -1 if hit next time)
-    reach goal: 10
+    goal: 10
 """
 
 from ninerooms import *
 from ninerooms_util import *
 import numpy as np
 from test_util import *
+import pickle
+import bz2
+
+train_file = bz2.BZ2File('train_model_nine', 'r')
+test_file = bz2.BZ2File('test_model_nine', 'r')
+train_list = pickle.load(train_file)
+test_list = pickle.load(test_file)
+
+easy_gate = {42: 'gate A', 63: 'gate B', 84: 'gate B', 85: 'gate A', 86: 'gate B', 126: 'gate C', 138: 'gate B',
+             149: 'gate A', 150: 'gate C', 151: 'gate A', 158: 'gate A', 207: 'gate B'}
+fix_init = 57
+fix_goal = 195
 
 class NineroomsGateState(NineroomsBaseState):
     def __init__(self, position_n, current_steps, goal_n, done, num_pos, gatedict, cum_reward: list, descr=None):
@@ -50,7 +61,8 @@ class NineroomsGateState(NineroomsBaseState):
         return gate_obs * self.position_n
 
 class NineroomsGate(NineroomsNorender):
-    def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, gatedict=None, seed=0):
+    def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, gatedict=None, seed=0, mode='train',
+                 easy_env=True, fix_pos=True):
         super().__init__(max_epilen, init_pos, goal, seed)
         self.Model = Model or dict()
         self.init_pos = init_pos
@@ -58,6 +70,9 @@ class NineroomsGate(NineroomsNorender):
         self.gatedict = gatedict or dict()
         self.state = NineroomsGateState(0, 0, 0, False, 0, None, [])
         self.open = False
+        self.mode = mode
+        self.easy_env = easy_env
+        self.fix_pos = fix_pos
 
         if Model is None:
             self.model_random = True
@@ -99,7 +114,9 @@ class NineroomsGate(NineroomsNorender):
         # If gate_random, no empty gate will assigned.
         self.open = True
 
-        if self.gate_random:
+        if self.easy_env:
+            self.gatedict = easy_gate
+        elif self.gate_random:
             for pos_n in gates_pos:
                 self.gatedict[pos_n] = np.random.choice(['gate A', 'gate B', 'gate C'])
 
@@ -107,14 +124,18 @@ class NineroomsGate(NineroomsNorender):
             self.rand_model()
 
         init_rooms = [0, 1, 2, 3, 5, 6, 7, 8]
-        if self.init_random:
+        if self.fix_pos:
+            init_pos_n = fix_init
+        elif self.init_random:
             init_room = np.random.choice(init_rooms)
             init_rooms.remove(init_room)
             init_pos_n = np.random.choice(rooms_pos[init_room])
         else:
             init_pos_n = self.init_pos
 
-        if self.goal_random:
+        if self.fix_pos:
+            goal_pos_n = fix_goal
+        elif self.goal_random:
             goal_room = np.random.choice(init_rooms)
             goal_pos_n = np.random.choice(rooms_pos[goal_room])
         else:
@@ -153,7 +174,7 @@ class NineroomsGate(NineroomsNorender):
     @staticmethod
     def penalty(pos_n):
         if pos_n in corr_pos:
-            return -0.2
+            return -0.1
         else:
             return -0.1
 
