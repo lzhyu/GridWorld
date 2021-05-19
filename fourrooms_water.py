@@ -40,7 +40,7 @@ train_file = bz2.BZ2File('train_model', 'r')
 test_file = bz2.BZ2File('test_model', 'r')
 train_list = pickle.load(train_file)
 test_list = pickle.load(test_file)
-fix_pos = 11
+fix_init = 11
 fix_goal = 92
 
 
@@ -101,7 +101,7 @@ class FourroomsWater(FourroomsCoinNorender):
             self.Model = Model
         self.mode = mode  # train or test
         self.easy_env = easy_env  # if easy_env, #coins in train set is 3-5, in test set is 6-8
-        self.fix_pos = fix_pos  # if fix_pos, the start position and the goal is fixed
+        self.fix_pos = fix_pos  # if fix_init, the start position and the goal is fixed
         self.reset()
 
     def basic_step(self, cell, action):
@@ -167,7 +167,7 @@ class FourroomsWater(FourroomsCoinNorender):
         # reset goal, position_n, coin_dict, state
         super(FourroomsCoin, self).reset()
         if self.fix_pos:
-            self.state.position_n = fix_pos
+            self.state.position_n = fix_init
             self.state.goal_n = fix_goal
 
         self.state = FourroomsCoinState(self.state, {}, self.num_coins, [])
