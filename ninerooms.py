@@ -90,7 +90,6 @@ class NineroomsNorender(NineroomsBase):
                 obs, reward, done, info = self.step(3)
                 cv2.imshow('img', self.render())
             step_n = self.state.current_steps
-            # print("%d, " % self.state.position_n, end='')
             print("%d" % step_n + ": " + "%d" % self.state.position_n + " %.1f" % reward)
         cv2.imshow('img', self.render())
         print(info)

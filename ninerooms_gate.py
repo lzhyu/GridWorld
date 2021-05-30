@@ -16,9 +16,14 @@ Model: {
 
 reward:
     penalty: -0.1
-    coin gate: 1 (would be eaten)
+    coin gate: 10 (would be eaten)
     water gate: -1 (-0.1 if stay at water, and -1 if hit next time)
     goal: 10
+
+new settings:
+    model: {'train', 'test"} use train model or test model, models in file 'train_model_nine' and 'test_model_nine'
+    easy_env: whether to fix gates (easy_gate)
+    fix_pos: whether to fix initial position and goal (initial in the left-up room, goal in the right-low room)
 """
 
 from ninerooms import *
@@ -115,7 +120,7 @@ class NineroomsGate(NineroomsNorender):
         self.open = True
 
         if self.easy_env:
-            self.gatedict = easy_gate
+            self.gatedict = deepcopy(easy_gate)
         elif self.gate_random:
             for pos_n in gates_pos:
                 self.gatedict[pos_n] = np.random.choice(['gate A', 'gate B', 'gate C'])

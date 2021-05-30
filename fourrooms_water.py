@@ -23,6 +23,12 @@ Now the agent walks two steps within a time step and the model can be random.
     A description is seen to the agent about the model.
 Method 'play' is to play the game by hand.
 
+Update:
+New settings:
+    mode: {'train', 'test'}, use train model or test model, models in file 'train_model' and 'test_model'
+    easy_env: whether to use easy env, 3-5 coins and waters in train mode, 6-8 coins and waters in test mode
+    fix_pos: whether to fix initial position and goal
+
 Possible extensions:
 Each game has random number of coins and waters.
 Length-variable discription
