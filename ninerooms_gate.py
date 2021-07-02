@@ -67,7 +67,7 @@ class NineroomsGateState(NineroomsBaseState):
 
 class NineroomsGate(NineroomsNorender):
     def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, gatedict=None, seed=0, mode='train',
-                 easy_env=True, fix_pos=True):
+                 easy_dy=True, easy_env=True, fix_pos=True):
         super().__init__(max_epilen, init_pos, goal, seed)
         self.Model = Model or dict()
         self.init_pos = init_pos
@@ -76,6 +76,7 @@ class NineroomsGate(NineroomsNorender):
         self.state = NineroomsGateState(0, 0, 0, False, 0, None, [])
         self.open = False
         self.mode = mode
+        self.easy_dy = easy_dy
         self.easy_env = easy_env
         self.fix_pos = fix_pos
 
@@ -109,10 +110,16 @@ class NineroomsGate(NineroomsNorender):
         return descr
 
     def rand_model(self):
-        self.Model['action'] = np.random.choice(['normal', 'left', 'right', 'inverse'])
-        self.Model['extra step'] = np.random.choice(['stay', 'left', 'right', 'forward'])
-        for key in ['gate A', 'gate B', 'gate C']:
-            self.Model[key] = np.random.choice(['coin', 'wall', 'water'])
+        if self.mode == 'train':
+            self.Model = np.random.choice(train_list)
+        else:
+            self.Model = np.random.choice(test_list)
+        if self.easy_dy:
+            self.Model['action'] = 'normal'
+            self.Model['extra step'] = 'stay'
+        else:
+            self.Model['action'] = np.random.choice(['normal', 'left', 'right', 'inverse'])
+            self.Model['extra step'] = np.random.choice(['stay', 'left', 'right', 'forward'])
 
     def reset(self):
         # If init_random and goal_random, init pos and goal is in diff & random outer rooms.
@@ -274,7 +281,7 @@ class NineroomsGateNorender(NineroomsGate):
             if gatetype == 'empty':
                 continue
             elif gatetype == 'gate A':
-                blocks.append(self.make_block(x, y, (0, 1, 1)))
+                blocks.append(self.make_block(x, y, (1, 1, 0)))
             elif gatetype == 'gate B':
                 blocks.append(self.make_block(x, y, (0, 1, 0)))
             elif gatetype == 'gate C':
