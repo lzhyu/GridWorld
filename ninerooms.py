@@ -59,7 +59,8 @@ class NineroomsBase(FourroomsNorender):
     def reset(self):
         super().reset()
         self.state.position_n = self.init_pos or self.state.position_n
-        return self.state.to_obs()
+        return self.state.to_obs
+
 
 class NineroomsNorender(NineroomsBase):
     def __init__(self, max_epilen=100, init_pos=None, goal=None, seed=0):
@@ -68,7 +69,7 @@ class NineroomsNorender(NineroomsBase):
     def play(self):
         print("Press esc to exit.")
         print("steps pos reward")
-        cv2.imshow('img', self.render())
+        cv2.imshow('img', np.flip(self.render(), -1))
         done = 0
         reward = 0
         info = {}
@@ -79,19 +80,16 @@ class NineroomsNorender(NineroomsBase):
                 return
             elif k == 0:  # up
                 obs, reward, done, info = self.step(0)
-                cv2.imshow('img', self.render())
             elif k == 1:  # down
                 obs, reward, done, info = self.step(1)
-                cv2.imshow('img', self.render())
             elif k == 2:  # left
                 obs, reward, done, info = self.step(2)
-                cv2.imshow('img', self.render())
             elif k == 3:  # right
                 obs, reward, done, info = self.step(3)
-                cv2.imshow('img', self.render())
+            cv2.imshow('img', np.flip(self.render(), -1))
             step_n = self.state.current_steps
             print("%d" % step_n + ": " + "%d" % self.state.position_n + " %.1f" % reward)
-        cv2.imshow('img', self.render())
+        cv2.imshow('img', np.flip(self.render(), -1))
         print(info)
         cv2.waitKey(0)
         cv2.destroyAllWindows()

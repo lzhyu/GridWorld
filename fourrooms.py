@@ -250,7 +250,7 @@ class FourroomsBase(gym.Env):
             reward = 10
         else:
             reward = -0.1
-        return self.state.to_obs(), reward, self.state.done, info
+        return self.state.to_obs, reward, self.state.done, info
 
     def seed(self, seed):
         np.random.seed(seed)
@@ -368,6 +368,34 @@ class FourroomsNorender(FourroomsBase):
         self.obs_width = tmp * self.Col
         self.init_background()
         return arr
+
+    def play(self):
+        print("Press esc to exit.")
+        print("steps pos reward")
+        # cv2 use BGR mode, render() returns RGB figure.
+        cv2.imshow('img', np.flip(self.render(), -1))
+        done = 0
+        reward = 0
+        info = {}
+        while not done:
+            k = cv2.waitKey(0)
+            if k == 27 or k == 113:  # esc or q
+                cv2.destroyAllWindows()
+                return
+            elif k == 0:  # up
+                obs, reward, done, info = self.step(0)
+            elif k == 1:  # down
+                obs, reward, done, info = self.step(1)
+            elif k == 2:  # left
+                obs, reward, done, info = self.step(2)
+            elif k == 3:  # right
+                obs, reward, done, info = self.step(3)
+            cv2.imshow('img', np.flip(self.render(), -1))
+            step_n = self.state.current_steps
+            print("%d" % step_n + ": " + "%d" % self.state.position_n + " %.1f" % reward)
+        print(info)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':

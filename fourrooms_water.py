@@ -310,7 +310,7 @@ class FourroomsWaterNorender(FourroomsWater):
         for coin, count in self.state.coin_dict.items():
             x, y = self.tocell[coin]
             if count[1]:  # exist
-                blocks.append(self.make_block(x, y, (0, 1, 1)))
+                blocks.append(self.make_block(x, y, (1, 1, 0)))
         blocks.extend(self.make_basic_blocks())
 
         arr = self.render_with_blocks(self.origin_background, blocks)
@@ -319,37 +319,6 @@ class FourroomsWaterNorender(FourroomsWater):
     def render(self, mode=0):
         blocks = []
         return self.render_water_blocks(blocks)
-
-    def play(self):
-        print("Press esc to exit.")
-        print(self.state.descr)
-        cv2.imshow('img', self.render())
-        done = 0
-        reward = 0
-        info = {}
-        while not done:
-            k = cv2.waitKey(0)
-            if k == 27:  # esc
-                cv2.destroyAllWindows()
-                return
-            elif k == 0:  # up
-                obs, reward, done, info = self.step(0)
-                cv2.imshow('img', self.render())
-            elif k == 1:  # down
-                obs, reward, done, info = self.step(1)
-                cv2.imshow('img', self.render())
-            elif k == 2:  # left
-                obs, reward, done, info = self.step(2)
-                cv2.imshow('img', self.render())
-            elif k == 3:  # right
-                obs, reward, done, info = self.step(3)
-                cv2.imshow('img', self.render())
-            step_n = self.state.current_steps
-            print("%d" % step_n + ": " + "%.1f" % reward)
-        cv2.imshow('img', self.render())
-        print(info)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
