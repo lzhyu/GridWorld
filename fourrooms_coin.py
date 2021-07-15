@@ -209,6 +209,27 @@ class FourroomsCoinNorender(FourroomsCoin):
         self.init_background()
         return arr
 
+# an extension example
+class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
+    """
+    white background, fix the observation size to 128X128
+    """
+
+    def __init__(self, max_epilen=400, obs_size=128, seed=0):
+        super(FourroomsCoinBackgroundNoise, self).__init__(max_epilen, seed=seed)
+        self.obs_size = obs_size
+        self.obs_height = obs_size
+        self.obs_width = obs_size
+
+        self.background = np.zeros((obs_size, obs_size, 3), dtype=np.int)
+
+    def render(self, mode=0):
+        obs = deepcopy(self.background)
+        arr = super().render()
+        padding_height, padding_width = (obs.shape[0] - arr.shape[0]) // 2, (obs.shape[1] - arr.shape[1]) // 2
+        obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr
+        return obs
+
 
 # an extension example
 class FourroomsCoinBackgroundNoise(FourroomsCoinNorender):
@@ -259,25 +280,65 @@ class FourroomsCoinRandomNoise(FourroomsCoinNorender):
         obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr
         return obs.astype(np.uint8)
 
-
-# random block that appears near the agent,but different from coin/goal/agent/wall
-class FourroomsKidNoise(FourroomsCoinNorender):
+# random noise
+class FourroomsCoinRandomNoiseV2(FourroomsCoinNorender):
     """
     FourroomsCoin Game with a kid randomly appears.
     """
 
     def __init__(self, max_epilen=100, obs_size=128, seed=int(time.time()) % 1024):
-        super(FourroomsKidNoise, self).__init__(max_epilen, seed=seed)
+        super( FourroomsCoinRandomNoiseV2, self).__init__(max_epilen, seed=seed)
         # self.background = np.zeros((2, obs_size, obs_size, 3),dtype=np.int)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size
 
-        self.background = (np.random.rand(3, obs_size, obs_size, 3) * 64).astype(np.int)
+        self.background = (np.random.rand(3, obs_size, obs_size, 3) * 128).astype(np.int)
         self.background[0, :, :, 1] += 32  # distinguish background
         self.background[1, :, :, 2] += 32
         self.background[1, :, :, 0] += 32
         # kid
+
+    def render(self, mode=0):
+        which_background = self.state.position_n % 3
+        obs = deepcopy(self.background[which_background, ...])
+        # add kid
+        avail_states = deepcopy(self.init_states)
+        for k in self.state.coin_dict.keys():
+            if k in avail_states:
+                avail_states.remove(k)
+        #
+        arr = self.render_coin_blocks([])
+
+        padding_height, padding_width = (obs.shape[0] - arr.shape[0]) // 2, (obs.shape[1] - arr.shape[1]) // 2
+        obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr - \
+            obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :]
+        # background:[0,16]
+        # obs:[0,255+16]
+
+        new_obs = self.resize_obs(obs).astype(np.uint8)
+
+        return new_obs
+
+    def resize_obs(self, obs):
+        """
+        Resize observation array to [0,255]
+        """
+        # input:(obs_size,obs_size,3)
+        minimum = np.min(obs)
+        obs_zero_min = obs - minimum
+        maximum = np.max(obs_zero_min)
+        # -1 to make sure maximum point <255
+        return ((obs_zero_min * 255) / maximum) - 1
+
+# random block that appears near the agent,but different from coin/goal/agent/wall
+class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
+    """
+    FourroomsCoin Game with a kid randomly appears.
+    """
+
+    def __init__(self, max_epilen=100, obs_size=128, seed=int(time.time()) % 1024):
+        super(FourroomsKidNoise, self).__init__(max_epilen, obs_size=obs_size, seed=seed)
 
     def render(self, mode=0):
         which_background = self.state.position_n % 3
@@ -304,22 +365,12 @@ class FourroomsKidNoise(FourroomsCoinNorender):
 
         return new_obs
 
-    def resize_obs(self, obs):
-        """
-        Resize observation array to [0,255]
-        """
-        # input:(obs_size,obs_size,3)
-        minimum = np.min(obs)
-        obs_zero_min = obs - minimum
-        maximum = np.max(obs_zero_min)
-        # -1 to make sure maximum point <255
-        return ((obs_zero_min * 255) / maximum) - 1
 
 
 if __name__ == '__main__':
     # basic test
     # env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
-    env = ImageInputWarpper(FourroomsKidNoise())
+    env = ImageInputWarpper(FourroomsCoinRandomNoiseV2())
     check_render(env)
 
     check_run(env)
