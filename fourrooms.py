@@ -15,9 +15,9 @@ from gym import core, spaces
 from gym.envs.registration import register
 import random
 from copy import deepcopy
-from wrappers import ImageInputWarpper
+from .wrappers import ImageInputWarpper
 import cv2
-from test_util import check_render, check_run
+from .test_util import check_render, check_run
 
 
 class FourroomsBaseState(object):
