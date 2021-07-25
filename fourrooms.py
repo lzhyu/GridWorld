@@ -371,6 +371,8 @@ class FourroomsNorender(FourroomsBase):
 
     def play(self):
         print("Press esc to exit.")
+        if hasattr(self.state, 'descr'):
+            print(self.state.descr)
         print("steps pos reward")
         # cv2 use BGR mode, render() returns RGB figure.
         cv2.imshow('img', np.flip(self.render(), -1))
