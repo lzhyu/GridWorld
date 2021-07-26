@@ -208,6 +208,44 @@ class FourroomsCoinNorender(FourroomsCoin):
         self.obs_width = tmp * self.Col
         self.init_background()
         return arr
+        
+    def play(self):
+        print("Press esc to exit.")
+        cv2.imshow('img', self.render())
+        done = 0
+        reward = 0
+        import moviepy.editor as mpy
+        image_sequence = []
+        info = {}
+        while not done:
+            k = cv2.waitKey(0)
+            print(k)
+            if k == 27:  # esc
+                cv2.destroyAllWindows()
+                return
+            elif k == 119:  # up
+                obs, reward, done, info = self.step(0)
+                cv2.imshow('img', self.render())
+            elif k == 115:  # down
+                obs, reward, done, info = self.step(1)
+                cv2.imshow('img', self.render())
+            elif k == 97:  # left
+                obs, reward, done, info = self.step(2)
+                cv2.imshow('img', self.render())
+            elif k == 100:  # right
+                obs, reward, done, info = self.step(3)
+                cv2.imshow('img', self.render())
+            print(self.render().shape)
+            image_sequence.append(self.render())
+            step_n = self.state.current_steps
+            print("%d" % step_n + ": " + "%.1f" % reward)
+        cv2.imshow('img', self.render())
+        #print(image_sequence)
+        clip = mpy.ImageSequenceClip(image_sequence, fps=3)
+        clip.write_gif('test.gif', fps=3)
+        print(info)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 # an extension example
 class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
@@ -369,11 +407,12 @@ class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
 
 if __name__ == '__main__':
     # basic test
-    # env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
-    env = ImageInputWarpper(FourroomsCoinRandomNoiseV2())
+    env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
+    # env = ImageInputWarpper(FourroomsCoinRandomNoiseV2())
     check_render(env)
 
     check_run(env)
     print("basic check finished")
+    env.play()
     # stable-baseline test
     # check_env(env,warn=True)
