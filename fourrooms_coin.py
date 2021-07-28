@@ -209,14 +209,48 @@ class FourroomsCoinNorender(FourroomsCoin):
         self.init_background()
         return arr
 
+    def play(self):
+        print("Press esc to exit.")
+        cv2.imshow('img', self.render())
+        done = 0
+        reward = 0
+        info = {}
+
+        while not done:
+            k = cv2.waitKey(0)
+            if k == 27:  # esc
+                cv2.destroyAllWindows()
+                return
+            elif k == 0:  # up
+                obs, reward, done, info = self.step(0)
+                cv2.imshow('img', self.render())
+            elif k == 1:  # down
+                obs, reward, done, info = self.step(1)
+                cv2.imshow('img', self.render())
+            elif k == 2:  # left
+                obs, reward, done, info = self.step(2)
+                cv2.imshow('img', self.render())
+            elif k == 3:  # right
+                obs, reward, done, info = self.step(3)
+                cv2.imshow('img', self.render())
+            image_sequence.append(obs)
+            step_n = self.state.current_steps
+            print("%d" % step_n + ": " + "%.1f" % reward)
+        cv2.imshow('img', self.render())
+        print(info)
+
+        cv2.waitKey(0)
+
+        cv2.destroyAllWindows()
+
 # an extension example
 class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
     """
     white background, fix the observation size to 128X128
     """
 
-    def __init__(self, max_epilen=400, obs_size=128, seed=0):
-        super(FourroomsCoinWhiteBackground, self).__init__(max_epilen, seed=seed)
+    def __init__(self, max_epilen=400, obs_size=128, num_coins =1, seed=0):
+        super(FourroomsCoinWhiteBackground, self).__init__(max_epilen, num_coins=num_coins, seed=seed)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size

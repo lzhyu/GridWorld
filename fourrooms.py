@@ -123,7 +123,7 @@ class FourroomsBase(gym.Env):
 1     1     1
 1111111111111
 """
-        self.block_size = 8
+        self.block_size = 4
         self.occupancy = np.array(
             [np.array(list(map(lambda c: 1 if c == '1' else 0, line))) for line in self.layout.splitlines()])
         self.num_pos = int(np.sum(self.occupancy == 0))
