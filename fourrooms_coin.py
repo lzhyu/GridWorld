@@ -249,11 +249,7 @@ class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
     white background, fix the observation size to 128X128
     """
 
-<<<<<<< HEAD
     def __init__(self, max_epilen=400, obs_size=128, num_coins =1, seed=0):
-=======
-    def __init__(self, max_epilen=400, num_coins=2, obs_size=128, seed=0):
->>>>>>> dc7f67201ce8cbe2f4381bb5a32e4490edc41643
         super(FourroomsCoinWhiteBackground, self).__init__(max_epilen, num_coins=num_coins, seed=seed)
         self.obs_size = obs_size
         self.obs_height = obs_size
