@@ -25,7 +25,7 @@ NOTE:ANY change of layout size should accompany a redefination of observation_sp
 """
 
 from .fourrooms import *
-from .wrappers import ImageInputWarpper
+from .wrappers import *
 from copy import deepcopy
 import abc
 import time
@@ -249,7 +249,11 @@ class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
     white background, fix the observation size to 128X128
     """
 
+<<<<<<< HEAD
     def __init__(self, max_epilen=400, obs_size=128, num_coins =1, seed=0):
+=======
+    def __init__(self, max_epilen=400, num_coins=2, obs_size=128, seed=0):
+>>>>>>> dc7f67201ce8cbe2f4381bb5a32e4490edc41643
         super(FourroomsCoinWhiteBackground, self).__init__(max_epilen, num_coins=num_coins, seed=seed)
         self.obs_size = obs_size
         self.obs_height = obs_size
@@ -271,8 +275,8 @@ class FourroomsCoinBackgroundNoise(FourroomsCoinNorender):
     dynamic background noise
     """
 
-    def __init__(self, max_epilen=400, obs_size=128, seed=0):
-        super(FourroomsCoinBackgroundNoise, self).__init__(max_epilen, seed=seed)
+    def __init__(self, max_epilen=200, obs_size=128,num_coins=2,seed=0):
+        super(FourroomsCoinBackgroundNoise, self).__init__(max_epilen, num_coins=num_coins,seed=seed)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size
@@ -295,8 +299,8 @@ class FourroomsCoinRandomNoise(FourroomsCoinNorender):
     Random background noise
     """
 
-    def __init__(self, max_epilen=100, obs_size=128, seed=0, num_colors=200, goal=77):
-        super(FourroomsCoinRandomNoise, self).__init__(max_epilen=max_epilen, seed=seed)
+    def __init__(self, max_epilen=100, obs_size=128, seed=0, num_colors=200, num_coins=2,goal=77):
+        super(FourroomsCoinRandomNoise, self).__init__(max_epilen=max_epilen, num_coins=num_coins,seed=seed)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size
@@ -320,8 +324,8 @@ class FourroomsCoinRandomNoiseV2(FourroomsCoinNorender):
     FourroomsCoin Game with a kid randomly appears.
     """
 
-    def __init__(self, max_epilen=100, obs_size=128, seed=int(time.time()) % 1024):
-        super( FourroomsCoinRandomNoiseV2, self).__init__(max_epilen, seed=seed)
+    def __init__(self, max_epilen=100, obs_size=128, num_coins=2, seed=int(time.time()) % 1024):
+        super( FourroomsCoinRandomNoiseV2, self).__init__(max_epilen,num_coins=num_coins, seed=seed)
         # self.background = np.zeros((2, obs_size, obs_size, 3),dtype=np.int)
         self.obs_size = obs_size
         self.obs_height = obs_size
@@ -371,8 +375,8 @@ class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
     FourroomsCoin Game with a kid randomly appears.
     """
 
-    def __init__(self, max_epilen=100, obs_size=128, seed=int(time.time()) % 1024):
-        super(FourroomsKidNoise, self).__init__(max_epilen, obs_size=obs_size, seed=seed)
+    def __init__(self, max_epilen=100, obs_size=128, num_coins=2, seed=int(time.time()) % 1024):
+        super(FourroomsKidNoise, self).__init__(max_epilen, obs_size=obs_size, num_coins=num_coins, seed=seed)
 
     def render(self, mode=0):
         which_background = self.state.position_n % 3
