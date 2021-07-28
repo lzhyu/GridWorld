@@ -24,12 +24,12 @@ NOTE:ANY change of layout size should accompany a redefination of observation_sp
 - To add randomness, change self.random.
 """
 
-from fourrooms import *
-from wrappers import ImageInputWarpper
+from .fourrooms import *
+from .wrappers import ImageInputWarpper
 from copy import deepcopy
 import abc
 import time
-from test_util import *
+from .test_util import *
 
 
 class FourroomsCoinState(FourroomsBaseState):
@@ -96,7 +96,7 @@ class FourroomsCoin(FourroomsNorender):
     This class should not render.
     """
 
-    def __init__(self, max_epilen=100, goal=None, num_coins=3, seed=0):
+    def __init__(self, max_epilen=100, goal=None, num_coins=6, seed=0):
         # 这里为了兼容留下了random coin，实际上没有用
 
         super(FourroomsCoin, self).__init__(max_epilen, goal, seed=seed)
@@ -175,7 +175,7 @@ class FourroomsCoin(FourroomsNorender):
 
 
 class FourroomsCoinNorender(FourroomsCoin):
-    def __init__(self, max_epilen=100, goal=None, num_coins=3, seed=0):
+    def __init__(self, max_epilen=100, goal=None, num_coins=2, seed=0):
         super().__init__(max_epilen=max_epilen, goal=goal, num_coins=num_coins, seed=seed)
 
     def render(self, mode=0):
@@ -254,7 +254,7 @@ class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
     """
 
     def __init__(self, max_epilen=400, obs_size=128, seed=0):
-        super(FourroomsCoinBackgroundNoise, self).__init__(max_epilen, seed=seed)
+        super(FourroomsCoinWhiteBackground, self).__init__(max_epilen, seed=seed)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size
