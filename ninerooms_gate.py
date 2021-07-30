@@ -269,8 +269,9 @@ class NineroomsGate(NineroomsNorender):
 
 
 class NineroomsGateNorender(NineroomsGate):
-    def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, gatedict=None, seed=0):
-        super().__init__(Model, max_epilen, init_pos, goal, gatedict, seed)
+    def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, gatedict=None, seed=0, mode='train',
+                 easy_dy=True, easy_env=True, fix_pos=True):
+        super().__init__(Model, max_epilen, init_pos, goal, gatedict, seed, mode, easy_dy, easy_env, fix_pos)
 
     def render(self, mode=0):
         blocks = []
