@@ -1,4 +1,4 @@
-from fourrooms_water import *
+from .fourrooms_water import *
 import numpy as np
 import random
 import pickle
@@ -13,6 +13,10 @@ trans_per_model = 5000
 num_models = 100
 num_train_models_of10 = 7
 
+water_choices = ['pass', 'block', 'left', 'right', 'forward']
+coin_choices = ['pass', 'left', 'right', 'forward']
+action_choices = ['normal', 'left', 'right', 'inverse']
+extra_step_choices = ['stay', 'left', 'right', 'forward']
 def random_model():
     Model = dict()
     Model['water'] = np.random.choice(['pass', 'block', 'left', 'right', 'forward'])
@@ -20,6 +24,17 @@ def random_model():
     Model['action'] = np.random.choice(['normal', 'left', 'right', 'inverse'])
     Model['extra step'] = np.random.choice(['stay', 'left', 'right', 'forward'])
     return Model
+
+def model_to_onehot(Model: dict):
+    water_onehot = [0] * len(water_choices)
+    coin_onehot = [0] * len(coin_choices)
+    action_onehot = [0] * len(action_choices)
+    extra_step_onehot = [0] * len(extra_step_choices)
+    water_onehot[water_choices.index(Model['water'])] = 1
+    coin_onehot[coin_choices.index(Model['coin'])] = 1
+    action_onehot[action_choices.index(Model['action'])] = 1
+    extra_step_onehot[extra_step_choices.index(Model['extra step'])] = 1
+    return np.concatenate([water_onehot, coin_onehot, action_onehot, extra_step_onehot]).astype(int)
 
 def to_vector(state: FourroomsWaterState):
     # return list[pos_n, goal_n, coin_list, water_list]
@@ -99,6 +114,47 @@ def collect_data():
             num_test_of10 = 0
         current_models += 1
 
+def desc2dict(desc: tuple):
+    desc_dict = dict()
+    for item in desc:
+        k, v = item.split(':')
+        desc_dict[k] = v[1:]
+    return desc_dict
+
+
+def generate_models(num_models=50):
+    train_Model = dict()
+    test_Model = dict()
+    current_models = 0
+    train_flag = 1
+    test_flag = 0
+    num_train_of10 = 0
+    num_test_of10 = 0
+    while current_models < num_models:
+        if train_flag:
+            while True:
+                Model = random_model()
+                if not test_Model.get(FourroomsWater.todescr(Model), False):
+                    break
+            train_Model[FourroomsWater.todescr(Model)] = True
+            num_train_of10 += 1
+        if test_flag:
+            while True:
+                Model = random_model()
+                if not train_Model.get(FourroomsWater.todescr(Model), False):
+                    break
+            test_Model[FourroomsWater.todescr(Model)] = True
+            num_test_of10 += 1
+        if num_train_of10 >= num_train_models_of10:
+            train_flag = 0
+            test_flag = 1
+            num_train_of10 = 0
+        if num_test_of10 >= 10 - num_train_models_of10:
+            train_flag = 1
+            test_flag = 0
+            num_test_of10 = 0
+        current_models += 1
+    return list(train_Model.keys()), list(test_Model.keys())
 
 if __name__ == '__main__':
     collect_data()

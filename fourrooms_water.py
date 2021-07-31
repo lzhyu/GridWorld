@@ -29,10 +29,10 @@ Length-variable discription
 Variable action space
 """
 
-from fourrooms_coin import *
-from wrappers import ImageInputWarpper
+from .fourrooms_coin import *
+from .wrappers import ImageInputWarpper
 from copy import deepcopy
-from test_util import *
+from .test_util import *
 
 
 class FourroomsWaterState(FourroomsCoinState):
