@@ -310,6 +310,26 @@ class FourroomsWaterNorender(FourroomsWater):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+class FourroomsWaterWhiteBackground(FourroomsWaterNorender):
+    """
+    white background, fix the observation size to 64X64
+    """
+
+    def __init__(self, max_epilen=200, obs_size=64, Model=None, num_coins=3, num_waters=3,seed=0):
+        super(FourroomsWaterWhiteBackground, self).__init__(max_epilen=max_epilen, num_waters=num_waters,\
+        num_coins=num_coins, seed=seed, Model=Model)
+        self.obs_size = obs_size
+        self.obs_height = obs_size
+        self.obs_width = obs_size
+
+        self.background = np.zeros((obs_size, obs_size, 3), dtype=np.int)
+
+    def render(self, mode=0):
+        obs = deepcopy(self.background)
+        arr = super().render()
+        padding_height, padding_width = (obs.shape[0] - arr.shape[0]) // 2, (obs.shape[1] - arr.shape[1]) // 2
+        obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr
+        return obs
 
 if __name__ == '__main__':
     env = ImageInputWarpper(FourroomsWaterNorender())
