@@ -233,7 +233,7 @@ class FourroomsCoinNorender(FourroomsCoin):
             elif k == 3:  # right
                 obs, reward, done, info = self.step(3)
                 cv2.imshow('img', self.render())
-            image_sequence.append(obs)
+            #image_sequence.append(obs)
             step_n = self.state.current_steps
             print("%d" % step_n + ": " + "%.1f" % reward)
         cv2.imshow('img', self.render())
@@ -264,6 +264,51 @@ class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
         obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr
         return obs
 
+class PoisonousCoin(FourroomsCoinWhiteBackground):
+    def __init__(self, max_epilen=400, obs_size=128, num_coins =1, seed=0):
+        super(PoisonousCoin, self).__init__(max_epilen = max_epilen, obs_size=obs_size, \
+        num_coins=num_coins, seed=seed)
+
+    def step(self, action):
+        if self.state.done:
+            raise Exception("Environment should be reseted")
+        currentcell = self.tocell[self.state.position_n]
+        possible_actions = list(range(self.action_space.n))
+        try:
+            nextcell = tuple(currentcell + self.directions[action])
+            possible_actions.remove(action)
+        except TypeError:
+            nextcell = tuple(currentcell + self.directions[action[0]])
+            possible_actions.remove(action[0])
+
+        if np.random.uniform() < self.random:  # random or determined
+            random_action = np.random.choice(possible_actions)
+            nextcell = tuple(currentcell + self.directions[random_action])
+
+        if not self.occupancy[nextcell]:
+            currentcell = nextcell
+
+        state = self.tostate[currentcell]
+        self.state.position_n = state
+        if state == self.state.goal_n:
+            reward = 10
+        elif self.state.coin_dict.get(state, (0, False))[1]:  # if find coin
+            reward = self.state.coin_dict.get(state, 0)[0] * -10
+            self.state.coin_dict[state] = (self.state.coin_dict[state][0], False)
+        else:
+            reward = -0.1
+        self.state.cum_reward.append(reward)
+
+        self.state.current_steps += 1
+        self.state.done = (state == self.state.goal_n) or self.state.current_steps >= self.max_epilen
+
+        info = {}
+        if self.state.done:
+            info = {'episode': {'r': np.sum(self.state.cum_reward), 'l': self.state.current_steps}}
+            # print(np.sum(self.state.cum_reward))
+            self.state.cum_reward = []
+
+        return self.state.to_obs(), reward, self.state.done, info
 
 # an extension example
 class FourroomsCoinBackgroundNoise(FourroomsCoinNorender):
