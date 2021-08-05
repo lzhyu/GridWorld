@@ -68,6 +68,8 @@ class NineroomsNorender(NineroomsBase):
 
     def play(self):
         print("Press esc to exit.")
+        if hasattr(self.state, 'descr'):
+            print(self.state.descr)
         print("steps pos reward")
         cv2.imshow('img', np.flip(self.render(), -1))
         done = 0
