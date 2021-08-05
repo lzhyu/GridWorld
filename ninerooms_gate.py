@@ -63,7 +63,7 @@ class NineroomsGateState(NineroomsBaseState):
             else:
                 gateindex = 0
             gate_obs += gateindex * (4 ** i)
-        return gate_obs * self.position_n
+        return gate_obs * self.num_pos + self.position_n
 
 class NineroomsGate(NineroomsNorender):
     def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, gatedict=None, seed=0, mode='train',
