@@ -39,11 +39,15 @@ from .fourrooms_coin import *
 from ..utils.wrapper.wrappers import ImageInputWarpper
 from copy import deepcopy
 from ..utils.test_util import *
+import os
 import pickle
 import bz2
 
-train_file = bz2.BZ2File('../utils/env_utils/train_model', 'r')
-test_file = bz2.BZ2File('../utils/env_utils/test_model', 'r')
+dirpath = os.path.dirname(__file__)
+train_file_path = os.path.join(dirpath, '../utils/env_utils/train_model')
+test_file_path = os.path.join(dirpath, '../utils/env_utils/test_model')
+train_file = bz2.BZ2File(train_file_path, 'r')
+test_file = bz2.BZ2File(test_file_path, 'r')
 train_list = pickle.load(train_file)
 test_list = pickle.load(test_file)
 fix_init = 11

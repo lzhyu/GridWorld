@@ -5,22 +5,24 @@ Test scripts:
 '''
 import cv2
 import os
+import numpy as np
 def check_render(env):
     #check if it renders correctly
-    if not os.path.exists('test_render'):
-        os.mkdir('test_render')
-    path='test_render'
+    path = os.path.dirname(__file__)
+    render_path = os.path.join(path, 'test_render')
+    if not os.path.exists(render_path):
+        os.mkdir(render_path)
 
     env.reset()
-    cv2.imwrite(os.path.join(path,'test0.jpg'),env.render())
+    cv2.imwrite(os.path.join(render_path,'test0.jpg'),np.flip(env.render(), -1))
     env.step(0)
-    cv2.imwrite(os.path.join(path,'test1.jpg'),env.render())
+    cv2.imwrite(os.path.join(render_path,'test1.jpg'),np.flip(env.render(), -1))
     env.step(1)
-    cv2.imwrite(os.path.join(path,'test2.jpg'),env.render())
+    cv2.imwrite(os.path.join(render_path,'test2.jpg'),np.flip(env.render(), -1))
     env.step(2)
-    cv2.imwrite(os.path.join(path,'test3.jpg'),env.render())
+    cv2.imwrite(os.path.join(render_path,'test3.jpg'),np.flip(env.render(), -1))
     env.step(3)
-    cv2.imwrite(os.path.join(path,'test4.jpg'),env.render())
+    cv2.imwrite(os.path.join(render_path,'test4.jpg'),np.flip(env.render(), -1))
 
 def check_run(env):
     #Run a few episodes

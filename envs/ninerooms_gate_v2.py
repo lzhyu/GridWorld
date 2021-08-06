@@ -125,3 +125,8 @@ class NineroomsGateV2(NineroomsGate):
         arr = self.render_with_blocks(self.origin_background, blocks)
         return arr
 
+if __name__ == '__main__':
+    # basic test
+    env_origin = ImageInputWarpper(NineroomsGateV2())
+    check_render(env_origin)
+    check_run(env_origin)

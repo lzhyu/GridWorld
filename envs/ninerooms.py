@@ -7,7 +7,6 @@ A corridor around the nine rooms, connected to the outer 8 rooms.
 
 from .fourrooms import *
 import numpy as np
-import cv2
 
 class NineroomsBaseState(FourroomsBaseState):
     def __init__(self, position_n, current_steps, goal_n, done, num_pos):
@@ -53,3 +52,9 @@ class NineroomsBase(FourroomsBase):
         super().reset()
         self.state.position_n = self.init_pos or self.state.position_n
         return self.state.to_obs
+
+if __name__ == '__main__':
+    # basic test
+    env_origin = ImageInputWarpper(NineroomsBase())
+    check_render(env_origin)
+    check_run(env_origin)

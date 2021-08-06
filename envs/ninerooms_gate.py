@@ -32,9 +32,13 @@ import numpy as np
 from ..utils.test_util import *
 import pickle
 import bz2
+import os
 
-train_file = bz2.BZ2File('../utils/env_utils/train_model_nine')
-test_file = bz2.BZ2File('../utils/env_utils/test_model_nine')
+dirpath = os.path.dirname(__file__)
+train_file_path = os.path.join(dirpath, '../utils/env_utils/train_model_nine')
+test_file_path = os.path.join(dirpath, '../utils/env_utils/test_model_nine')
+train_file = bz2.BZ2File(train_file_path)
+test_file = bz2.BZ2File(test_file_path)
 train_list = pickle.load(train_file)
 test_list = pickle.load(test_file)
 

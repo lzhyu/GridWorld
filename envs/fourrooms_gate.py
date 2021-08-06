@@ -125,3 +125,9 @@ class FourroomsGate(FourroomsBase):
             blocks.append(self.make_block(x, y, (0, 1, 0)))
         blocks.extend(self.make_basic_blocks())
         return self.render_with_blocks(self.origin_background, blocks)
+
+if __name__ == '__main__':
+    # basic test
+    env_origin = ImageInputWarpper(FourroomsGate())
+    check_render(env_origin)
+    check_run(env_origin)

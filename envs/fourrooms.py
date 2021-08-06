@@ -158,7 +158,7 @@ class FourroomsBase(gym.Env):
         for i in range(len(self.occupancy)):
             for j in range(len(self.occupancy[0])):
                 if self.occupancy[i, j] == 0:
-                    self.tostate[(i, j)] = statenum
+                    tostate[(i, j)] = statenum
                     statenum += 1
         return statenum, tostate
 
