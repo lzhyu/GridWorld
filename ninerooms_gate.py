@@ -292,10 +292,32 @@ class NineroomsGateNorender(NineroomsGate):
         arr = self.render_with_blocks(self.origin_background, blocks)
         return arr
 
+class NineroomsGateWhiteBackground(NineroomsGateNorender):
+    """
+    white background, fix the observation size to 64X64
+    """
+    def __init__(self,  *args, obs_size=164, **kwargs):
+        super(NineroomsGateWhiteBackground, self).__init__(*args, **kwargs)
+        self.obs_size = obs_size
+        self.obs_height = obs_size
+        self.obs_width = obs_size
+
+        self.background = np.zeros((obs_size, obs_size, 3), dtype=np.int)
+
+    def render(self, mode=0):
+        obs = deepcopy(self.background)
+        arr = super().render()
+        padding_height, padding_width = (obs.shape[0] - arr.shape[0]) // 2, (obs.shape[1] - arr.shape[1]) // 2
+        obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr
+        return obs
 
 if __name__ == '__main__':
     env = ImageInputWarpper(NineroomsGateNorender())
+    obs = env.reset()
+    print(obs.shape)#160,160
     check_render(env)
     check_run(env)
     print('check finished.')
+    print(train_list)
+    print(test_list)
 

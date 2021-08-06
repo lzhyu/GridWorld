@@ -403,6 +403,7 @@ class FourroomsNorender(FourroomsBase):
 if __name__ == '__main__':
     # basic test
     env_origin = ImageInputWarpper(FourroomsNorender())
+
     check_render(env_origin)
     check_run(env_origin)
 

@@ -21,7 +21,11 @@ train_models_value = [
     (0, 0, 1, 1),
     (1, 0, 1, 0),
     (0, 1, 0, 0),
-    (1, 1, 0, 1)
+    (1, 1, 0, 1),
+    (2, 0, 0, 0),
+    (0, 2, 0, 0),
+    (0, 0, 2, 0),
+    (0, 0, 0, 2)
 ]
 
 test_models_value = []
@@ -43,5 +47,8 @@ def value2model(model_value):
             Model[gates_pos[i]] = 'wall'
     return Model
 
+def value2onehot(model_value):
+    pass
+    
 train_models = [value2model(model_value) for model_value in train_models_value]
 test_models = [value2model(model_value) for model_value in test_models_value]

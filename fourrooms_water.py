@@ -42,12 +42,12 @@ from .test_util import *
 import pickle
 import bz2
 
-train_file = bz2.BZ2File('train_model', 'r')
-test_file = bz2.BZ2File('test_model', 'r')
-train_list = pickle.load(train_file)
-test_list = pickle.load(test_file)
-fix_init = 11
-fix_goal = 92
+# train_file = bz2.BZ2File('train_model', 'r')
+# test_file = bz2.BZ2File('test_model', 'r')
+# train_list = pickle.load(train_file)
+# test_list = pickle.load(test_file)
+# fix_init = 11
+# fix_goal = 92
 
 
 class FourroomsWaterState(FourroomsCoinState):
