@@ -3,8 +3,8 @@ Ninerooms Game with gates -- v2
 All gates are in one color, whose type is given by the description.
 """
 
-from ninerooms_gate import *
-from ninerooms_util import *
+from .ninerooms_gate import *
+from ..utils.env_utils.ninerooms_util import *
 
 def random_train_model():
     Model = dict()
@@ -34,7 +34,7 @@ class NineroomsGateV2State(NineroomsGateState):
         return cls(base.position_n, base.current_steps, base.goal_n, base.done, base.num_pos, base.gatedict, base.cum_reward, base.descr)
 
 
-class NineroomsGateV2(NineroomsGateNorender):
+class NineroomsGateV2(NineroomsGate):
     def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, seed=None, mode='train'):
         super().__init__(Model=Model, max_epilen=max_epilen, init_pos=init_pos, goal=goal, seed=seed, mode=mode,
                          easy_dy=False, easy_env=False, fix_pos=False)
@@ -114,10 +114,6 @@ class NineroomsGateV2(NineroomsGateNorender):
             info = {'episode': {'r': sum(self.state.cum_reward), 'l': self.state.current_steps}}
 
         return self.state.to_obs(), reward, done, info
-
-class NineroomsGateV2Norender(NineroomsGateV2):
-    def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, seed=None, mode='train'):
-        super().__init__(Model, max_epilen, init_pos, goal, seed, mode)
 
     def render(self, mode=0):
         blocks = []

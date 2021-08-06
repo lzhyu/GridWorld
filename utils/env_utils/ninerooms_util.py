@@ -1,6 +1,7 @@
 """
 Some utils for ninerooms
 """
+import numpy as np
 
 # position_n
 LU_pos = [24, 25, 26, 27, 38, 39, 40, 41, 55, 56, 57, 58, 70, 71, 72, 73]
@@ -21,3 +22,16 @@ corr_pos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 14
 init_gatedict = dict()
 for pos in gates_pos:
     init_gatedict[pos] = True
+
+gate_group = [
+    [
+        [0, 4, 5, 11],
+        [1, 2, 8, 10],
+        [3, 6, 7, 9]
+    ],
+    [
+        [0, 5, 7, 9],
+        [1, 3, 6, 11],
+        [2, 4, 8, 10]
+    ]
+]

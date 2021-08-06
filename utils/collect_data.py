@@ -1,4 +1,4 @@
-from fourrooms_water import *
+from ..envs.fourrooms_water import *
 import numpy as np
 import random
 import pickle
@@ -45,13 +45,13 @@ def collect_from_model(Model, num_trans, file):
     pickle.dump(descr, file)
     num_coins = random.randint(0, max_coins)
     num_waters = random.randint(0, max_waters)
-    env = FourroomsWaterNorender(Model=Model, max_epilen=max_epilen, num_coins=num_coins, num_waters=num_waters, seed=None)
+    env = FourroomsWater(Model=Model, max_epilen=max_epilen, num_coins=num_coins, num_waters=num_waters, seed=None)
     current_trans = 0
     while current_trans < num_trans:
         if env.state.done:
             num_coins = random.randint(0, max_coins)
             num_waters = random.randint(0, max_waters)
-            env = FourroomsWaterNorender(Model=Model,  max_epilen=max_epilen, num_coins=num_coins, num_waters=num_waters, seed=None)
+            env = FourroomsWater(Model=Model,  max_epilen=max_epilen, num_coins=num_coins, num_waters=num_waters, seed=None)
         current_state = to_vector(env.state)
         action = random.randint(0, env.action_space.n-1)
         env.step(action)

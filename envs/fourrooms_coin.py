@@ -24,12 +24,12 @@ NOTE:ANY change of layout size should accompany a redefination of observation_sp
 - To add randomness, change self.random.
 """
 
-from fourrooms import *
-from wrappers import ImageInputWarpper
+from .fourrooms import *
+from ..utils.wrapper.wrappers import ImageInputWarpper
 from copy import deepcopy
 import abc
 import time
-from test_util import *
+from ..utils.test_util import *
 
 
 class FourroomsCoinState(FourroomsBaseState):
@@ -90,7 +90,7 @@ class FourroomsCoinState(FourroomsBaseState):
         return self.position_n, self.current_steps, self.goal_n, self.done, tuple(l)
 
 
-class FourroomsCoin(FourroomsNorender):
+class FourroomsCoin(FourroomsBase):
     """Fourroom game with agent,goal and coins that inherits gym.Env.
 
     This class should not render.
@@ -170,22 +170,16 @@ class FourroomsCoin(FourroomsNorender):
         return self.state.to_obs()
 
     @abc.abstractmethod
-    def render(self):
-        pass
-
-
-class FourroomsCoinNorender(FourroomsCoin):
-    def __init__(self, max_epilen=100, goal=None, num_coins=3, seed=0):
-        super().__init__(max_epilen=max_epilen, goal=goal, num_coins=num_coins, seed=seed)
-
     def render(self, mode=0):
         blocks = []
         return self.render_coin_blocks(blocks)
 
-    def render_coin_blocks(self, blocks=[]):
+    def render_coin_blocks(self, blocks=None):
         """
         You must explicitly pass blocks
         """
+        if blocks is None:
+            blocks = []
         for coin, count in self.state.coin_dict.items():
             x, y = self.tocell[coin]
             if count[1]:  # exist
@@ -209,9 +203,8 @@ class FourroomsCoinNorender(FourroomsCoin):
         self.init_background()
         return arr
 
-
 # an extension example
-class FourroomsCoinBackgroundNoise(FourroomsCoinNorender):
+class FourroomsCoinBackgroundNoise(FourroomsCoin):
     """
     dynamic background noise
     """
@@ -235,7 +228,7 @@ class FourroomsCoinBackgroundNoise(FourroomsCoinNorender):
         return obs
 
 
-class FourroomsCoinRandomNoise(FourroomsCoinNorender):
+class FourroomsCoinRandomNoise(FourroomsCoin):
     """
     Random background noise
     """
@@ -261,7 +254,7 @@ class FourroomsCoinRandomNoise(FourroomsCoinNorender):
 
 
 # random block that appears near the agent,but different from coin/goal/agent/wall
-class FourroomsKidNoise(FourroomsCoinNorender):
+class FourroomsKidNoise(FourroomsCoin):
     """
     FourroomsCoin Game with a kid randomly appears.
     """

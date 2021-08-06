@@ -11,11 +11,11 @@ Init pos and goal are at diagonal rooms.
 Wall number is at most 1, so the agent can reach the goal.
 """
 from abc import ABC
-from fourrooms import *
-from wrappers import ImageInputWarpper
-from test_util import *
+from .fourrooms import *
+from ..utils.wrapper.wrappers import ImageInputWarpper
+from ..utils.test_util import *
 import numpy as np
-from fourrooms_util import *
+from ..utils.env_utils.fourrooms_util import *
 
 
 class FourroomsGateState(FourroomsBaseState):
@@ -45,7 +45,7 @@ class FourroomsGateState(FourroomsBaseState):
     def to_tuple(self):
         return self.position_n, self.current_steps, self.goal_n, self.done, tuple(self.gate_list)
 
-class FourroomsGate(FourroomsNorender, ABC):
+class FourroomsGate(FourroomsBase):
     def __init__(self, Model=None, max_epilen=100, goal=None, seed=None, mode='train', gate_list=None):
         super(FourroomsGate, self).__init__(max_epilen, goal, seed)
         # Model: dict pos -> gate type
@@ -115,13 +115,6 @@ class FourroomsGate(FourroomsNorender, ABC):
             info = {'episode': {'r': np.sum(self.state.cum_reward), 'l': self.state.current_steps}}
 
         return self.state.to_obs, reward, self.state.done, info
-
-    def render(self, mode=0):
-        pass
-
-class FourroomsGateNorender(FourroomsGate):
-    def __init__(self, Model=None, max_epilen=100, goal=None, seed=None, mode='train', gate_list=None):
-        super().__init__(Model, max_epilen, goal, seed, mode, gate_list)
 
     def render(self, mode=0):
         blocks = []

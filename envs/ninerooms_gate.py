@@ -26,15 +26,15 @@ new settings:
     fix_pos: whether to fix initial position and goal (initial in the left-up room, goal in the right-low room)
 """
 
-from ninerooms import *
-from ninerooms_util import *
+from .ninerooms import *
+from ..utils.env_utils.ninerooms_util import *
 import numpy as np
-from test_util import *
+from ..utils.test_util import *
 import pickle
 import bz2
 
-train_file = bz2.BZ2File('train_model_nine', 'r')
-test_file = bz2.BZ2File('test_model_nine', 'r')
+train_file = bz2.BZ2File('../utils/env_utils/train_model_nine')
+test_file = bz2.BZ2File('../utils/env_utils/test_model_nine')
 train_list = pickle.load(train_file)
 test_list = pickle.load(test_file)
 
@@ -65,7 +65,7 @@ class NineroomsGateState(NineroomsBaseState):
             gate_obs += gateindex * (4 ** i)
         return gate_obs * self.num_pos + self.position_n
 
-class NineroomsGate(NineroomsNorender):
+class NineroomsGate(NineroomsBase):
     def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, gatedict=None, seed=0, mode='train',
                  easy_dy=True, easy_env=True, fix_pos=True):
         super().__init__(max_epilen, init_pos, goal, seed)
@@ -158,11 +158,11 @@ class NineroomsGate(NineroomsNorender):
                                         descr=self.to_descr())
         return self.state.to_obs()
 
-    def basic_step(self, pos, transfer):
-        nextcell = tuple(self.tocell[pos] + transfer)
+    def basic_step(self, pos_n, transfer):
+        nextcell = tuple(self.tocell[pos_n] + transfer)
         if not self.occupancy[nextcell]:
             return self.tostate[nextcell]
-        return pos
+        return pos_n
 
     @staticmethod
     def turn(transfer, direction):
@@ -267,12 +267,6 @@ class NineroomsGate(NineroomsNorender):
 
         return self.state.to_obs(), reward, done, info
 
-
-class NineroomsGateNorender(NineroomsGate):
-    def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, gatedict=None, seed=0, mode='train',
-                 easy_dy=True, easy_env=True, fix_pos=True):
-        super().__init__(Model, max_epilen, init_pos, goal, gatedict, seed, mode, easy_dy, easy_env, fix_pos)
-
     def render(self, mode=0):
         blocks = []
         for pos_n, gatetype in self.gatedict.items():
@@ -292,9 +286,8 @@ class NineroomsGateNorender(NineroomsGate):
         arr = self.render_with_blocks(self.origin_background, blocks)
         return arr
 
-
 if __name__ == '__main__':
-    env = ImageInputWarpper(NineroomsGateNorender())
+    env = ImageInputWarpper(NineroomsGate())
     check_render(env)
     check_run(env)
     print('check finished.')

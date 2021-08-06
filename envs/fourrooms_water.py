@@ -35,15 +35,15 @@ Length-variable discription
 Variable action space
 """
 
-from fourrooms_coin import *
-from wrappers import ImageInputWarpper
+from .fourrooms_coin import *
+from ..utils.wrapper.wrappers import ImageInputWarpper
 from copy import deepcopy
-from test_util import *
+from ..utils.test_util import *
 import pickle
 import bz2
 
-train_file = bz2.BZ2File('train_model', 'r')
-test_file = bz2.BZ2File('test_model', 'r')
+train_file = bz2.BZ2File('../utils/env_utils/train_model', 'r')
+test_file = bz2.BZ2File('../utils/env_utils/test_model', 'r')
 train_list = pickle.load(train_file)
 test_list = pickle.load(test_file)
 fix_init = 11
@@ -88,7 +88,7 @@ class FourroomsWaterState(FourroomsCoinState):
         return np.array(self.watered_state())
 
 
-class FourroomsWater(FourroomsCoinNorender):
+class FourroomsWater(FourroomsCoin):
     def __init__(self, Model=None, max_epilen=100, goal=None, num_coins=3, num_waters=3, seed=0, mode='train',
                  easy_env=True, fix_pos=True):
         super(FourroomsCoin, self).__init__(max_epilen, goal, seed)
@@ -224,7 +224,7 @@ class FourroomsWater(FourroomsCoinNorender):
             pass
         return transfer
 
-    def model_step(self, cell, transfer, extra=1, push=0, coin_get=[], push_num=0):
+    def model_step(self, cell, transfer, extra=1, push=0, coin_get=None, push_num=0):
         # Help for self.step and debugging, return next_cell, coin_git
         if coin_get is None:
             coin_get = []
@@ -294,16 +294,13 @@ class FourroomsWater(FourroomsCoinNorender):
 
         return self.state.to_obs(), reward, self.state.done, info
 
-    def render(self):
-        pass
+    def render(self, mode=0):
+        blocks = []
+        return self.render_water_blocks(blocks)
 
-
-class FourroomsWaterNorender(FourroomsWater):
-    def __init__(self, Model=None, max_epilen=100, goal=None, num_coins=3, num_waters=3, seed=0, mode='train',
-                 easy_env=True, fix_pos=True):
-        super().__init__(Model, max_epilen, goal, num_coins, num_waters, seed, mode, easy_env, fix_pos)
-
-    def render_water_blocks(self, blocks=[]):
+    def render_water_blocks(self, blocks=None):
+        if blocks is None:
+            blocks = []
         for water in self.state.water_list:
             x, y = self.tocell[water]
             blocks.append(self.make_block(x, y, (0, 1, 0)))
@@ -316,13 +313,9 @@ class FourroomsWaterNorender(FourroomsWater):
         arr = self.render_with_blocks(self.origin_background, blocks)
         return arr
 
-    def render(self, mode=0):
-        blocks = []
-        return self.render_water_blocks(blocks)
-
 
 if __name__ == '__main__':
-    env = ImageInputWarpper(FourroomsWaterNorender())
+    env = ImageInputWarpper(FourroomsWater())
     check_render(env)
     check_run(env)
     print("Basic check finished.")
