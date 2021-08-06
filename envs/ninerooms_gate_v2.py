@@ -6,14 +6,12 @@ All gates are in one color, whose type is given by the description.
 from .ninerooms_gate import *
 from ..utils.env_utils.ninerooms_util import *
 
-def random_train_model():
+random_train_model = train_model_gen
+def random_test_model():
     Model = dict()
     for gate in gates_pos:
         Model[gate] = np.random.choice(['coin', 'water', 'wall'])
     return Model
-
-def random_test_model():
-    return random_train_model()
 
 class NineroomsGateV2State(NineroomsGateState):
     def __init__(self, position_n, current_steps, goal_n, done, num_pos, gatedict, cum_reward: list, descr=None):

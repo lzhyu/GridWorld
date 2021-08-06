@@ -23,7 +23,7 @@ init_gatedict = dict()
 for pos in gates_pos:
     init_gatedict[pos] = True
 
-gate_group = [
+gate_groups = [
     [
         [0, 4, 5, 11],
         [1, 2, 8, 10],
@@ -33,5 +33,20 @@ gate_group = [
         [0, 5, 7, 9],
         [1, 3, 6, 11],
         [2, 4, 8, 10]
+    ],
+    [
+        [0, 3, 8, 10],
+        [1, 6, 7, 11],
+        [2, 4, 5, 9]
     ]
 ]
+
+def train_model_gen():
+    Model = dict()
+    group_types = np.random.permutation(['coin', 'water', 'wall'])
+    group = np.random.choice(gate_groups)
+    for gates, gate_type in zip(group, group_types):
+        for gate_index in gates:
+            Model[gates_pos[gate_index]] = gate_type
+    return Model
+

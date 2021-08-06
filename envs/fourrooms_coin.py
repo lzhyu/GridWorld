@@ -125,10 +125,6 @@ class FourroomsCoin(FourroomsBase):
             nextcell = tuple(currentcell + self.directions[action[0]])
             possible_actions.remove(action[0])
 
-        if np.random.uniform() < self.random:  # random or determined
-            random_action = np.random.choice(possible_actions)
-            nextcell = tuple(currentcell + self.directions[random_action])
-
         if not self.occupancy[nextcell]:
             currentcell = nextcell
 
@@ -312,7 +308,7 @@ class FourroomsKidNoise(FourroomsCoin):
 if __name__ == '__main__':
     # basic test
     # env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
-    env = ImageInputWarpper(FourroomsKidNoise())
+    env = ImageInputWarpper(FourroomsKidNoise(seed=None))
     check_render(env)
 
     check_run(env)

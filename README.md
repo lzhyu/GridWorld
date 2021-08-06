@@ -17,11 +17,11 @@ Some noise might be added to increase the difficulty,see `fourrooms_coin.py` for
 
 
 #### Demo
-Girdworld with an agent and a goal.(basic version)
+Girdworld with an agent (blue) and a goal(red). Rewards are -0.1 if the goal is not reached, and 10 if reached.
 
 <img src="./demo/demo0.jpg">
 
-Girdworld with a coin.
+Girdworld with a coin(yellow). A coin will give $reward=10$ and be eaten.
 
 <img src="./demo/demo1.jpg">
 
@@ -37,11 +37,25 @@ Gridworld with background dynamic noise and an irrelevant dark block.
 
 <img src="./demo/demo4.jpg">
 
-Gridworld with coins, waters which act as obstacles, and more complex dynamics shown to the agent by a piece of discription. It's not guaranteed that the agent can reach the goal now (to be completed). Note when rendering, coins are golden and waters are green.
+Gridworld with coins, waters(green) which act as obstacles, and more complex dynamics shown by a piece of discription. It's not guaranteed that the agent can reach the goal (to be completed).
 
-<img src="./test_render/test0.jpg">
+<img src="./demo/fourrooms_water0.jpg">
 
+Gridworld with gates(green), each of which can be a coin/water/wall according to the description. Different from the previous one, the agent can pass the water and get $reward=-1$.
 
+<img src="./demo/fourrooms_gate.jpg">
+
+Gridworld with nine rooms
+
+<img src="./demo/ninerooms.jpg">
+
+Nine rooms with gates. Gates in common color are of one type(coin/water/wall), which is given by the description.
+
+<img src="./demo/ninerooms_gate.jpg">
+
+Nine rooms with gates -v2. Similar to fourrooms with gates, each gate has a type, which is given by the description.
+
+<img src="./demo/ninerooms_gate_v2.jpg">
 
 #### Specifics
 
