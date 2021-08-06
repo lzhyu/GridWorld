@@ -44,7 +44,7 @@ gate_groups = [
 def train_model_gen():
     Model = dict()
     group_types = np.random.permutation(['coin', 'water', 'wall'])
-    group = np.random.choice(gate_groups)
+    group = gate_groups[np.random.choice(range(3))]
     for gates, gate_type in zip(group, group_types):
         for gate_index in gates:
             Model[gates_pos[gate_index]] = gate_type

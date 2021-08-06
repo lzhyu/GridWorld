@@ -75,7 +75,7 @@ class NineroomsGateV2(NineroomsGate):
         else:
             goal_n = self.goal
 
-        self.state = NineroomsGateV2State(init_pos_n, 0, goal_n, False, self.num_pos, init_gatedict, [], self.to_descr())
+        self.state = NineroomsGateV2State(init_pos_n, 0, goal_n, False, self.num_pos, deepcopy(init_gatedict), [], self.to_descr())
         return self.state.to_obs()
 
     def step(self, action):
