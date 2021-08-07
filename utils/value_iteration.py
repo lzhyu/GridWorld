@@ -7,9 +7,9 @@ import numpy as np
 import pickle
 import os
 from copy import deepcopy
-from fourrooms import FourroomsNorender
-from fourrooms_coin import FourroomsCoinNorender
-from wrappers import ImageInputWarpper
+from ..envs.fourrooms import FourroomsBase
+from ..envs.fourrooms_coin import FourroomsCoin
+from .wrapper.wrappers import ImageInputWarpper
 import cv2
 
 def value_iteration(env, gamma=0.95, buffer_size=2000, showQ=True):
@@ -109,5 +109,5 @@ def value_iteration(env, gamma=0.95, buffer_size=2000, showQ=True):
     print("value iteration finished")
 
 if __name__=='__main__':
-    env=ImageInputWarpper(FourroomsCoinNorender())
+    env=ImageInputWarpper(FourroomsCoin())
     value_iteration(env)

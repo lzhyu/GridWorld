@@ -24,12 +24,12 @@ NOTE:ANY change of layout size should accompany a redefination of observation_sp
 - To add randomness, change self.random.
 """
 
-from fourrooms import *
-from wrappers import ImageInputWarpper
+from .fourrooms import *
+from ..utils.wrapper.wrappers import ImageInputWarpper
 from copy import deepcopy
 import abc
 import time
-from test_util import *
+from ..utils.test_util import *
 
 
 class FourroomsCoinState(FourroomsBaseState):
@@ -90,7 +90,7 @@ class FourroomsCoinState(FourroomsBaseState):
         return self.position_n, self.current_steps, self.goal_n, self.done, tuple(l)
 
 
-class FourroomsCoin(FourroomsNorender):
+class FourroomsCoin(FourroomsBase):
     """Fourroom game with agent,goal and coins that inherits gym.Env.
 
     This class should not render.
@@ -124,10 +124,6 @@ class FourroomsCoin(FourroomsNorender):
         except TypeError:
             nextcell = tuple(currentcell + self.directions[action[0]])
             possible_actions.remove(action[0])
-
-        if np.random.uniform() < self.random:  # random or determined
-            random_action = np.random.choice(possible_actions)
-            nextcell = tuple(currentcell + self.directions[random_action])
 
         if not self.occupancy[nextcell]:
             currentcell = nextcell
@@ -170,22 +166,16 @@ class FourroomsCoin(FourroomsNorender):
         return self.state.to_obs()
 
     @abc.abstractmethod
-    def render(self):
-        pass
-
-
-class FourroomsCoinNorender(FourroomsCoin):
-    def __init__(self, max_epilen=100, goal=None, num_coins=3, seed=0):
-        super().__init__(max_epilen=max_epilen, goal=goal, num_coins=num_coins, seed=seed)
-
     def render(self, mode=0):
         blocks = []
         return self.render_coin_blocks(blocks)
 
-    def render_coin_blocks(self, blocks=[]):
+    def render_coin_blocks(self, blocks=None):
         """
         You must explicitly pass blocks
         """
+        if blocks is None:
+            blocks = []
         for coin, count in self.state.coin_dict.items():
             x, y = self.tocell[coin]
             if count[1]:  # exist
@@ -268,9 +258,8 @@ class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
         obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr
         return obs
 
-
 # an extension example
-class FourroomsCoinBackgroundNoise(FourroomsCoinNorender):
+class FourroomsCoinBackgroundNoise(FourroomsCoin):
     """
     dynamic background noise
     """
@@ -294,7 +283,7 @@ class FourroomsCoinBackgroundNoise(FourroomsCoinNorender):
         return obs
 
 
-class FourroomsCoinRandomNoise(FourroomsCoinNorender):
+class FourroomsCoinRandomNoise(FourroomsCoin):
     """
     Random background noise
     """
@@ -318,8 +307,9 @@ class FourroomsCoinRandomNoise(FourroomsCoinNorender):
         obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr
         return obs.astype(np.uint8)
 
-# random noise
-class FourroomsCoinRandomNoiseV2(FourroomsCoinNorender):
+
+# random block that appears near the agent,but different from coin/goal/agent/wall
+class FourroomsKidNoise(FourroomsCoin):
     """
     FourroomsCoin Game with a kid randomly appears.
     """
@@ -407,8 +397,8 @@ class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
 
 if __name__ == '__main__':
     # basic test
-    env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
-    # env = ImageInputWarpper(FourroomsCoinRandomNoiseV2())
+    # env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
+    env = ImageInputWarpper(FourroomsKidNoise(seed=None))
     check_render(env)
 
     check_run(env)
