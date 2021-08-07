@@ -23,16 +23,35 @@ Now the agent walks two steps within a time step and the model can be random.
     A description is seen to the agent about the model.
 Method 'play' is to play the game by hand.
 
+Update:
+New settings:
+    mode: {'train', 'test'}, use train model or test model, models in file 'train_model' and 'test_model'
+    easy_env: whether to use easy env, 3-5 coins and waters in train mode, 6-8 coins and waters in test mode
+    fix_pos: whether to fix initial position and goal
+
 Possible extensions:
 Each game has random number of coins and waters.
 Length-variable discription
 Variable action space
 """
 
-from fourrooms_coin import *
-from wrappers import ImageInputWarpper
+from .fourrooms_coin import *
+from ..utils.wrapper.wrappers import ImageInputWarpper
 from copy import deepcopy
-from test_util import *
+from ..utils.test_util import *
+import os
+import pickle
+import bz2
+
+dirpath = os.path.dirname(__file__)
+train_file_path = os.path.join(dirpath, '../utils/env_utils/train_model')
+test_file_path = os.path.join(dirpath, '../utils/env_utils/test_model')
+train_file = bz2.BZ2File(train_file_path, 'r')
+test_file = bz2.BZ2File(test_file_path, 'r')
+train_list = pickle.load(train_file)
+test_list = pickle.load(test_file)
+fix_init = 11
+fix_goal = 92
 
 
 class FourroomsWaterState(FourroomsCoinState):
@@ -73,8 +92,9 @@ class FourroomsWaterState(FourroomsCoinState):
         return np.array(self.watered_state())
 
 
-class FourroomsWater(FourroomsCoinNorender):
-    def __init__(self, Model=None, max_epilen=100, goal=None, num_coins=3, num_waters=3, seed=0):
+class FourroomsWater(FourroomsCoin):
+    def __init__(self, Model=None, max_epilen=100, goal=None, num_coins=3, num_waters=3, seed=0, mode='train',
+                 easy_env=True, fix_pos=True):
         super(FourroomsCoin, self).__init__(max_epilen, goal, seed)
         self.num_waters = num_waters
         assert self.num_pos > (self.num_waters + 10), "too many waters."
@@ -82,13 +102,16 @@ class FourroomsWater(FourroomsCoinNorender):
         assert (self.num_pos - self.num_waters) > (self.num_coins + 5), "too many coins."
         self.init_states = list(range(self.observation_space.n))
         self.init_states_ori = deepcopy(self.init_states)
-        self.observation_space = spaces.Discrete((self.num_pos - self.num_waters) * (2 ** num_coins))
+        self.observation_space = spaces.Discrete((self.num_pos - self.num_waters) * (2 ** self.num_coins))
         self.occupancy_ori = deepcopy(self.occupancy)
         if Model is None:
             self.model_random = 1
         else:
             self.model_random = 0
             self.Model = Model
+        self.mode = mode  # train or test
+        self.easy_env = easy_env  # if easy_env, #coins in train set is 3-5, in test set is 6-8
+        self.fix_pos = fix_pos  # if fix_init, the start position and the goal is fixed
         self.reset()
 
     def basic_step(self, cell, action):
@@ -123,6 +146,14 @@ class FourroomsWater(FourroomsCoinNorender):
 
     def reset(self):
         # reset water_list, init_states, occupancy
+        if self.easy_env:
+            if self.mode == 'train':
+                self.num_coins = np.random.choice([3, 4, 5])
+                self.num_waters = np.random.choice([3, 4, 5])
+            else:
+                self.num_coins = np.random.choice([6, 7, 8])
+                self.num_waters = np.random.choice([6, 7, 8])
+        self.observation_space = spaces.Discrete((self.num_pos - self.num_waters) * (2 ** self.num_coins))
         self.init_states = deepcopy(self.init_states_ori)
         self.occupancy = deepcopy(self.occupancy_ori)
         water_list = np.array([], dtype=int)
@@ -144,16 +175,28 @@ class FourroomsWater(FourroomsCoinNorender):
                 raise NotImplementedError("Building waters error.")
 
         # reset goal, position_n, coin_dict, state
-        super().reset()
-        self.state = FourroomsWaterState(self.state, water_list, self.num_waters, None)
+        super(FourroomsCoin, self).reset()
+        if self.fix_pos:
+            self.state.position_n = fix_init
+            self.state.goal_n = fix_goal
+
+        self.state = FourroomsCoinState(self.state, {}, self.num_coins, [])
+        init_states = deepcopy(self.init_states)
+        if self.state.goal_n in init_states:
+            init_states.remove(self.state.goal_n)
+        if self.state.position_n in init_states:
+            init_states.remove(self.state.position_n)
+        coin_list = np.random.choice(init_states, self.num_coins, replace=False)
+        coin_dict = {coin: (1, True) for coin in coin_list}
+        self.state.coin_dict = coin_dict
 
         # reset Model, description
         if self.model_random:
-            self.Model = dict()
-            self.Model['water'] = np.random.choice(['pass', 'block', 'left', 'right', 'forward'])
-            self.Model['coin'] = np.random.choice(['pass', 'left', 'right', 'forward'])
-            self.Model['action'] = np.random.choice(['normal', 'left', 'right', 'inverse'])
-            self.Model['extra step'] = np.random.choice(['stay', 'left', 'right', 'forward'])
+            if self.mode == 'train':
+                self.Model = np.random.choice(train_list)
+            else:
+                self.Model = np.random.choice(test_list)
+        self.state = FourroomsWaterState(self.state, water_list, self.num_waters, None)
         descr = self.todescr(self.Model)
         self.state.descr = descr
         return self.state.to_obs()
@@ -185,7 +228,7 @@ class FourroomsWater(FourroomsCoinNorender):
             pass
         return transfer
 
-    def model_step(self, cell, transfer, extra=1, push=0, coin_get=[], push_num=0):
+    def model_step(self, cell, transfer, extra=1, push=0, coin_get=None, push_num=0):
         # Help for self.step and debugging, return next_cell, coin_git
         if coin_get is None:
             coin_get = []
@@ -255,64 +298,28 @@ class FourroomsWater(FourroomsCoinNorender):
 
         return self.state.to_obs(), reward, self.state.done, info
 
-    def render(self):
-        pass
+    def render(self, mode=0):
+        blocks = []
+        return self.render_water_blocks(blocks)
 
-
-class FourroomsWaterNorender(FourroomsWater):
-    def __init__(self, Model=None, max_epilen=100, goal=None, num_coins=3, num_waters=3, seed=0):
-        super().__init__(Model, max_epilen, goal, num_coins, num_waters, seed)
-
-    def render_water_blocks(self, blocks=[]):
+    def render_water_blocks(self, blocks=None):
+        if blocks is None:
+            blocks = []
         for water in self.state.water_list:
             x, y = self.tocell[water]
             blocks.append(self.make_block(x, y, (0, 1, 0)))
         for coin, count in self.state.coin_dict.items():
             x, y = self.tocell[coin]
             if count[1]:  # exist
-                blocks.append(self.make_block(x, y, (0, 1, 1)))
+                blocks.append(self.make_block(x, y, (1, 1, 0)))
         blocks.extend(self.make_basic_blocks())
 
         arr = self.render_with_blocks(self.origin_background, blocks)
         return arr
 
-    def render(self, mode=0):
-        blocks = []
-        return self.render_water_blocks(blocks)
-
-    def play(self):
-        print("Press esc to exit.")
-        cv2.imshow('img', self.render())
-        done = 0
-        reward = 0
-        info = {}
-        while not done:
-            k = cv2.waitKey(0)
-            if k == 27:  # esc
-                cv2.destroyAllWindows()
-                return
-            elif k == 0:  # up
-                obs, reward, done, info = self.step(0)
-                cv2.imshow('img', self.render())
-            elif k == 1:  # down
-                obs, reward, done, info = self.step(1)
-                cv2.imshow('img', self.render())
-            elif k == 2:  # left
-                obs, reward, done, info = self.step(2)
-                cv2.imshow('img', self.render())
-            elif k == 3:  # right
-                obs, reward, done, info = self.step(3)
-                cv2.imshow('img', self.render())
-            step_n = self.state.current_steps
-            print("%d" % step_n + ": " + "%.1f" % reward)
-        cv2.imshow('img', self.render())
-        print(info)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
 
 if __name__ == '__main__':
-    env = ImageInputWarpper(FourroomsWaterNorender())
+    env = ImageInputWarpper(FourroomsWater())
     check_render(env)
     check_run(env)
     print("Basic check finished.")
