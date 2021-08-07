@@ -105,7 +105,7 @@ class FourroomsBase(gym.Env):
 
         # Initialize layout
         self.layout = self.init_layout()
-        self.block_size = 8
+        self.block_size = 4
         self.occupancy = np.array(
             [np.array(list(map(lambda c: 1 if c == '1' else 0, line))) for line in self.layout.splitlines()])
         self.num_pos = int(np.sum(self.occupancy == 0))
@@ -373,6 +373,6 @@ if __name__ == '__main__':
     env_origin = ImageInputWarpper(FourroomsBase())
     check_render(env_origin)
     check_run(env_origin)
-
+    print("basic check finished")
     # stable-baseline test
     # check_env(env_origin,warn=True)

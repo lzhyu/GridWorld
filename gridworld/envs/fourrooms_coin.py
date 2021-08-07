@@ -4,7 +4,7 @@
 class:
     + FourroomsCoinState and FourroomsCoin are based on FourroomsBase,
     you can inherit them for extension.
-    + FourroomsCoinNorender support rendering.
+    + FourroomsCoin is basic game class.
     + FourroomsCoinBackgroundNoise is an extension example.
 
 ------
@@ -238,13 +238,13 @@ class FourroomsCoin(FourroomsBase):
         cv2.destroyAllWindows()
 
 # an extension example
-class FourroomsCoinWhiteBackground(FourroomsCoinNorender):
+class FourroomsCoinWhiteBackground(FourroomsCoin):
     """
-    white background, fix the observation size to 128X128
+    white background, fix the observation size to obs_size X obs_size
     """
 
-    def __init__(self, max_epilen=400, obs_size=128, seed=0):
-        super(FourroomsCoinBackgroundNoise, self).__init__(max_epilen, seed=seed)
+    def __init__(self, *args, obs_size=128, **kwargs):
+        super(FourroomsCoinBackgroundNoise, self).__init__(*args, **kwargs)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size
@@ -264,8 +264,8 @@ class FourroomsCoinBackgroundNoise(FourroomsCoin):
     dynamic background noise
     """
 
-    def __init__(self, max_epilen=400, obs_size=128, seed=0):
-        super(FourroomsCoinBackgroundNoise, self).__init__(max_epilen, seed=seed)
+    def __init__(self, *args, obs_size=128, **kwargs):
+        super(FourroomsCoinBackgroundNoise, self).__init__(*args, **kwargs)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size
@@ -288,8 +288,8 @@ class FourroomsCoinRandomNoise(FourroomsCoin):
     Random background noise
     """
 
-    def __init__(self, max_epilen=100, obs_size=128, seed=0, num_colors=200, goal=77):
-        super(FourroomsCoinRandomNoise, self).__init__(max_epilen=max_epilen, seed=seed)
+    def __init__(self, *args, obs_size=128, **kwargs):
+        super(FourroomsCoinRandomNoise, self).__init__(*args, **kwargs)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size
@@ -309,13 +309,13 @@ class FourroomsCoinRandomNoise(FourroomsCoin):
 
 
 # random block that appears near the agent,but different from coin/goal/agent/wall
-class FourroomsKidNoise(FourroomsCoin):
+class FourroomsCoinRandomNoiseV2(FourroomsCoin):
     """
     FourroomsCoin Game with a kid randomly appears.
     """
 
-    def __init__(self, max_epilen=100, obs_size=128, seed=int(time.time()) % 1024):
-        super( FourroomsCoinRandomNoiseV2, self).__init__(max_epilen, seed=seed)
+    def __init__(self, *args, obs_size=64, **kwargs):
+        super(FourroomsCoinRandomNoiseV2, self).__init__(*args, **kwargs)
         # self.background = np.zeros((2, obs_size, obs_size, 3),dtype=np.int)
         self.obs_size = obs_size
         self.obs_height = obs_size
@@ -365,8 +365,8 @@ class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
     FourroomsCoin Game with a kid randomly appears.
     """
 
-    def __init__(self, max_epilen=100, obs_size=128, seed=int(time.time()) % 1024):
-        super(FourroomsKidNoise, self).__init__(max_epilen, obs_size=obs_size, seed=seed)
+    def __init__(self, *args, **kwargs):
+        super(FourroomsKidNoise, self).__init__(*args, **kwargs)
 
     def render(self, mode=0):
         which_background = self.state.position_n % 3
@@ -397,12 +397,11 @@ class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
 
 if __name__ == '__main__':
     # basic test
-    # env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
-    env = ImageInputWarpper(FourroomsKidNoise(seed=None))
+    env = ImageInputWarpper(FourroomsKidNoise())
     check_render(env)
-
     check_run(env)
     print("basic check finished")
-    env.play()
+    # env.play()
+    
     # stable-baseline test
     # check_env(env,warn=True)
