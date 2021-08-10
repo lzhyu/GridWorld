@@ -26,6 +26,7 @@ def check_render(env):
 
 def check_run(env):
     #Run a few episodes
+    env.reset()
     reward_list=[]
     for i in range(1000):
         obs,reward,done,_=env.step(env.action_space.sample())

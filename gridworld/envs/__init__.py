@@ -6,3 +6,4 @@ from .fourrooms_gate import FourroomsGate
 from .ninerooms import NineroomsBase
 from .ninerooms_gate import NineroomsGate
 from .ninerooms_gate_v2 import NineroomsGateV2
+from .poison_coin import PoisonousCoin
