@@ -243,8 +243,8 @@ class FourroomsCoinWhiteBackground(FourroomsCoin):
     white background, fix the observation size to obs_size X obs_size
     """
 
-    def __init__(self, *args, obs_size=128, **kwargs):
-        super(FourroomsCoinBackgroundNoise, self).__init__(*args, **kwargs)
+    def __init__(self, *args, obs_size=64, **kwargs):
+        super(FourroomsCoinWhiteBackground, self).__init__(*args, **kwargs)
         self.obs_size = obs_size
         self.obs_height = obs_size
         self.obs_width = obs_size
@@ -397,7 +397,7 @@ class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
 
 if __name__ == '__main__':
     # basic test
-    env = ImageInputWarpper(FourroomsKidNoise())
+    env = ImageInputWarpper(FourroomsCoinWhiteBackground())
     check_render(env)
     check_run(env)
     print("basic check finished")

@@ -57,6 +57,10 @@ Nine rooms with gates -v2. Similar to fourrooms with gates, each gate has a type
 
 <img src="./demo/ninerooms_gate_v2.jpg">
 
+Fourrooms with poisonous coins, $reward = -10 $ when touch the green coins.
+
+<img src="./demo/fourrooms_poison.jpg">
+
 #### Specifics
 
 `fourrooms.py`and `fourrooms_coin.py` define two main game classes.Some details are in the beginning of the program files.
