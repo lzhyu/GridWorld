@@ -14,7 +14,7 @@ from stable_baselines.common.evaluation import evaluate_policy
 def stable_baseline_test(env_origin):
     env = make_vec_env(lambda: env_origin, n_envs=1)
     model = ACKTR('CnnPolicy',env_origin, verbose=1)
-    model.learn(total_timesteps=2000000)
+    model.learn(total_timesteps=1000000)
     print("Stable_baseline evaluation starts.....\n")
     #NOTE:evaluate_policy needs vec_env
     reward_mean,reward_std=evaluate_policy(model,env,n_eval_episodes=20,deterministic=False)
