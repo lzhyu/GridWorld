@@ -52,11 +52,15 @@ class Encoder(BaseFeaturesExtractor):
         DEPTH = 32
         self.cnn = nn.Sequential(
             nn.Conv2d(n_input_channels, DEPTH, kernel_size=4, stride=2, padding=0),
+            nn.InstanceNorm2d(DEPTH),
             nn.ELU(),
             nn.Conv2d(DEPTH, DEPTH*2, kernel_size=4, stride=2, padding=0),
+            nn.InstanceNorm2d(DEPTH*2),
             nn.ELU(),
             nn.Conv2d(DEPTH*2, DEPTH*4, kernel_size=4, stride=2, padding=0),
+            nn.InstanceNorm2d(DEPTH*4),
             nn.ELU(),
+            nn.Conv2d(DEPTH*4, DEPTH*4, kernel_size=3, stride=1, padding=0),
             # nn.Conv2d(DEPTH*4, DEPTH*8, kernel_size=4, stride=2, padding=0),
             #nn.Flatten(),
         )
@@ -67,6 +71,7 @@ class Encoder(BaseFeaturesExtractor):
 
     def forward(self, observations: torch.Tensor) -> torch.Tensor:
         x = self.cnn(observations)#
+        
         return x
 
 class Decoder(nn.Module):
@@ -78,16 +83,19 @@ class Decoder(nn.Module):
         self.linear = nn.Sequential(nn.Linear(hidden_dim, DEPTH*8*4), nn.ELU())
         self.cnn = nn.Sequential(
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(DEPTH*4, DEPTH*4, kernel_size=3, stride=1, padding=0),
+            nn.Conv2d(DEPTH*4, DEPTH*4, kernel_size=3, stride=1, padding=1),
+            nn.InstanceNorm2d(DEPTH*4),
             nn.ELU(),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(DEPTH*4, DEPTH*2, kernel_size=3, stride=1, padding=0),
+            nn.Conv2d(DEPTH*4, DEPTH*4, kernel_size=3, stride=1, padding=1),
+            nn.InstanceNorm2d(DEPTH*4),
             nn.ELU(),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(DEPTH*2, DEPTH*2, kernel_size=4, stride=1, padding=0),
+            nn.Conv2d(DEPTH*4, DEPTH*2, kernel_size=3, stride=1, padding=1),
+            nn.InstanceNorm2d(DEPTH*2),
             nn.ELU(),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(DEPTH*2, input_channel, kernel_size=3, stride=1, padding=0),
+            nn.Conv2d(DEPTH*2, input_channel, kernel_size=3, stride=1, padding=1),
         )
         # self.cnn = nn.Sequential(
         #     nn.ConvTranspose2d(DEPTH*4, DEPTH*4, kernel_size=3, stride=2, padding=0),
@@ -107,6 +115,7 @@ class Decoder(nn.Module):
         # print(features.size())
         batch_size = features.size()[0]
         obs = self.cnn(features)
+        #print(obs.size())
         obs = torch.tanh(obs)+0.5
         return obs[:,:,:,:]
 
