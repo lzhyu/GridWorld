@@ -6,13 +6,14 @@ import numpy as np
 from ..utils.test_util import *
 from .fourrooms_coin import FourroomsCoinWhiteBackground
 from ..utils.wrapper.wrappers import ImageInputWarpper
+from stable_baselines3.common.vec_env import SubprocVecEnv,DummyVecEnv
 ATARI_ENV = 2
 GRID_ENV = 1
 
 
-class Atari:
+class Atari(gym.Env):
 
-  LOCK = threading.Lock()
+  #LOCK = threading.Lock()
 
   def __init__(
       self, name, action_repeat=4, size=(64, 64), grayscale=False, noops=30,
@@ -22,11 +23,11 @@ class Atari:
     import gym.envs.atari
     if name == 'james_bond':
       name = 'jamesbond'
-    with self.LOCK:
-      env = gym.envs.atari.AtariEnv(
-          game=name, obs_type='image', frameskip=1,
-          repeat_action_probability=0.25 if sticky_actions else 0.0,
-          full_action_space=all_actions)
+    #with self.LOCK:
+    env = gym.envs.atari.AtariEnv(
+        game=name, obs_type='image', frameskip=1,
+        repeat_action_probability=0.25 if sticky_actions else 0.0,
+        full_action_space=all_actions)
     # Avoid unnecessary rendering in inner env.
     env._get_obs = lambda: None
     # Tell wrapper that the inner env has no action repeat.
@@ -53,8 +54,8 @@ class Atari:
     return self._env.close()
 
   def reset(self):
-    with self.LOCK:
-      image = self._env.reset()
+    #with self.LOCK:
+    image = self._env.reset()
     if self._grayscale:
       image = image[..., None]
     obs = {'image': image, 'ram': self._env.env._get_ram()}
@@ -71,9 +72,9 @@ class Atari:
   def render(self, mode='rgb_array'):
     return self._env.render(mode)
 
-class SequentialEnv:
+class SequentialEnv(gym.Env):
     def __init__(self):
-        self.grid_env = ImageInputWarpper(FourroomsCoinWhiteBackground())
+        self.grid_env = ImageInputWarpper(FourroomsCoinWhiteBackground(num_coins = 1))
         self.atari_env = Atari('pong')
         self.stage = 0
 
@@ -84,6 +85,7 @@ class SequentialEnv:
             obs, reward, done, info = self.grid_env.step(action)
             if done and self.grid_env.state.current_steps < self.grid_env.max_epilen-5:
                 #switch env
+                reward = 30
                 self.stage = ATARI_ENV
                 obs = self.atari_env.reset()
                 return obs, reward, False, info
@@ -121,3 +123,12 @@ if __name__=='__main__':
     print(env.observation_space)
     print(env.action_space)
     print("basic check finished")
+    from stable_baselines3 import A2C, PPO, TD3, SAC
+    env = Atari('pong')
+    kwargs = dict(n_epochs=10, n_steps=64,learning_rate=0.0001, ent_coef=0.003)
+    print("pid:\t{}".format(os.getpid()))
+    print(kwargs)
+    model =PPO('CnnPolicy', env, verbose=1,tensorboard_log='./sequential_log/'+'test_pong'+'/',\
+    **kwargs)
+    model.learn(2e6)
+
