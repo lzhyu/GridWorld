@@ -126,6 +126,27 @@ class FourroomsGate(FourroomsBase):
         blocks.extend(self.make_basic_blocks())
         return self.render_with_blocks(self.origin_background, blocks)
 
+# an extension example
+class FourroomsGateWhiteBackground(FourroomsGate):
+    """
+    white background, fix the observation size to obs_size X obs_size
+    """
+
+    def __init__(self, *args, obs_size=64, **kwargs):
+        super(FourroomsGateWhiteBackground, self).__init__(*args, **kwargs)
+        self.obs_size = obs_size
+        self.obs_height = obs_size
+        self.obs_width = obs_size
+
+        self.background = np.zeros((obs_size, obs_size, 3), dtype=np.int)
+
+    def render(self, mode=0):
+        obs = deepcopy(self.background)
+        arr = super().render()
+        padding_height, padding_width = (obs.shape[0] - arr.shape[0]) // 2, (obs.shape[1] - arr.shape[1]) // 2
+        obs[padding_height:padding_height + arr.shape[0], padding_width:padding_width + arr.shape[1], :] = arr
+        return obs
+
 if __name__ == '__main__':
     # basic test
     env_origin = ImageInputWarpper(FourroomsGate())
