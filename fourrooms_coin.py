@@ -449,7 +449,7 @@ class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
 if __name__ == '__main__':
     # basic test
     # env=ImageInputWarpper(FourroomsCoinNorender(seed=int(time.time())))
-    env = ImageInputWarpper(FourroomsCoinRandomNoiseV2())
+    env = ImageInputWarpper(PoisonousCoin())
     check_render(env)
 
     check_run(env)
