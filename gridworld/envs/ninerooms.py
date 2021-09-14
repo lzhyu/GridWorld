@@ -55,6 +55,6 @@ class NineroomsBase(FourroomsBase):
 
 if __name__ == '__main__':
     # basic test
-    env_origin = ImageInputWarpper(NineroomsBase(seed=None))
+    env_origin = ImageInputWrapper(NineroomsBase(seed=None))
     check_render(env_origin)
     check_run(env_origin)

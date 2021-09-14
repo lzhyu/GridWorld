@@ -36,7 +36,7 @@ Variable action space
 """
 
 from .fourrooms_coin import *
-from ..utils.wrapper.wrappers import ImageInputWarpper
+from ..utils.wrapper.wrappers import ImageInputWrapper
 from copy import deepcopy
 from ..utils.test_util import *
 import os
@@ -319,7 +319,7 @@ class FourroomsWater(FourroomsCoin):
 
 
 if __name__ == '__main__':
-    env = ImageInputWarpper(FourroomsWater())
+    env = ImageInputWrapper(FourroomsWater())
     check_render(env)
     check_run(env)
     print("Basic check finished.")

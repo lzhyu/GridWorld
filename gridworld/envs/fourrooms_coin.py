@@ -25,7 +25,7 @@ NOTE:ANY change of layout size should accompany a redefination of observation_sp
 """
 
 from .fourrooms import *
-from ..utils.wrapper.wrappers import ImageInputWarpper
+from ..utils.wrapper.wrappers import ImageInputWrapper
 from copy import deepcopy
 import abc
 import time
@@ -397,7 +397,7 @@ class FourroomsKidNoise(FourroomsCoinRandomNoiseV2):
 
 if __name__ == '__main__':
     # basic test
-    env = ImageInputWarpper(FourroomsCoinWhiteBackground())
+    env = ImageInputWrapper(FourroomsCoinWhiteBackground())
     check_render(env)
     check_run(env)
     print("basic check finished")

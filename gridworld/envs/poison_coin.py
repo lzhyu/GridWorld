@@ -1,7 +1,7 @@
 from .fourrooms_coin import FourroomsCoinWhiteBackground
 import numpy as np
 from copy import deepcopy
-from ..utils.wrapper.wrappers import ImageInputWarpper
+from ..utils.wrapper.wrappers import ImageInputWrapper
 import cv2
 from ..utils.test_util import check_render, check_run
 
@@ -70,7 +70,7 @@ class PoisonousCoin(FourroomsCoinWhiteBackground):
 
 if __name__ == '__main__':
     # basic test)
-    env = ImageInputWarpper(PoisonousCoin())
+    env = ImageInputWrapper(PoisonousCoin())
     check_render(env)
     check_run(env)
     print("basic check finished")

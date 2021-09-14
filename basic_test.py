@@ -1,6 +1,6 @@
 # to run basic test for all envs
 import inspect
-from gridworld.utils.wrapper.wrappers import ImageInputWarpper
+from gridworld.utils.wrapper.wrappers import ImageInputWrapper
 from gridworld.utils.test_util import *
 import gridworld
 
@@ -19,7 +19,7 @@ for f in envfiles:
     for name, obj in inspect.getmembers(module, inspect.isclass):
         try:
             if isinstance(obj(), FourroomsBase):
-                env = ImageInputWarpper(obj())
+                env = ImageInputWrapper(obj())
                 check_render(env)
                 check_run(env)
                 print(f"basic check for {name} finished")

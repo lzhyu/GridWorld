@@ -291,7 +291,7 @@ class NineroomsGate(NineroomsBase):
         return arr
 
 if __name__ == '__main__':
-    env = ImageInputWarpper(NineroomsGate())
+    env = ImageInputWrapper(NineroomsGate())
     check_render(env)
     check_run(env)
     print('check finished.')
