@@ -11,7 +11,7 @@ import numpy as np
 import gym
 from gym import spaces
 from copy import deepcopy
-from ..utils.wrapper.wrappers import ImageInputWarpper
+from ..utils.wrapper.wrappers import ImageInputWrapper
 import cv2
 from ..utils.test_util import check_render, check_run
 
@@ -323,12 +323,12 @@ class FourroomsBase(gym.Env):
         self.obs_height = 50 * self.Row
         self.obs_width = 50 * self.Col
 
-        self.init_background()
+        self.origin_background = self.init_background()
         arr = self.render()
         self.block_size = tmp
         self.obs_height = tmp * self.Row
         self.obs_width = tmp * self.Col
-        self.init_background()
+        self.origin_background = self.init_background()
         return arr
 
     def play(self):
@@ -337,7 +337,7 @@ class FourroomsBase(gym.Env):
             print(self.state.descr)
         print("steps pos reward")
         # cv2 use BGR mode, render() returns RGB figure.
-        cv2.imshow('img', np.flip(self.render(), -1))
+        cv2.imshow('img', np.flip(self.render_huge(), -1))
         done = 0
         reward = 0
         info = {}
@@ -354,7 +354,7 @@ class FourroomsBase(gym.Env):
                 obs, reward, done, info = self.step(2)
             elif k == 3:  # right
                 obs, reward, done, info = self.step(3)
-            cv2.imshow('img', np.flip(self.render(), -1))
+            cv2.imshow('img', np.flip(self.render_huge(), -1))
             step_n = self.state.current_steps
             print("%d" % step_n + ": " + "%d" % self.state.position_n + " %.1f" % reward)
         print(info)
@@ -370,7 +370,7 @@ class FourroomsBase(gym.Env):
 
 if __name__ == '__main__':
     # basic test
-    env_origin = ImageInputWarpper(FourroomsBase())
+    env_origin = ImageInputWrapper(FourroomsBase())
     check_render(env_origin)
     check_run(env_origin)
     print("basic check finished")
