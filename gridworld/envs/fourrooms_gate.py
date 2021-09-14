@@ -12,7 +12,7 @@ Wall number is at most 1, so the agent can reach the goal.
 """
 from abc import ABC
 from .fourrooms import *
-from ..utils.wrapper.wrappers import ImageInputWarpper
+from ..utils.wrapper.wrappers import ImageInputWrapper
 from ..utils.test_util import *
 import numpy as np
 from ..utils.env_utils.fourrooms_util import *
@@ -125,9 +125,25 @@ class FourroomsGate(FourroomsBase):
             blocks.append(self.make_block(x, y, (0, 1, 0)))
         blocks.extend(self.make_basic_blocks())
         return self.render_with_blocks(self.origin_background, blocks)
+    
+    def color_render(self):
+        blocks = []
+        for i in range(4):
+            if self.gate_list[i] == 0:
+                continue
+            x, y = self.tocell[gates_pos[i]]
+            if self.Model[gates_pos[i]] == 'coin':
+                color = (1, 1, 0)
+            elif self.Model[gates_pos[i]] == 'water':
+                color = (0, 1, 0)
+            else:
+                color = (1, 0, 1)
+            blocks.append(self.make_block(x, y, color))
+        blocks.extend(self.make_basic_blocks())
+        return self.render_with_blocks(self.origin_background, blocks)
 
 if __name__ == '__main__':
     # basic test
-    env_origin = ImageInputWarpper(FourroomsGate())
+    env_origin = ImageInputWrapper(FourroomsGate())
     check_render(env_origin)
     check_run(env_origin)
