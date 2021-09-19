@@ -45,29 +45,43 @@ class FourroomsGateState(FourroomsBaseState):
     def to_tuple(self):
         return self.position_n, self.current_steps, self.goal_n, self.done, tuple(self.gate_list)
 
+
 class FourroomsGate(FourroomsBase):
-    def __init__(self, Model=None, max_epilen=100, goal=None, seed=None, mode='train', gate_list=None):
+    def __init__(self, Model=None, max_epilen=100, init_pos=None, goal=None, seed=None, mode='train', gate_list=None):
         super(FourroomsGate, self).__init__(max_epilen, goal, seed)
-        # Model: dict pos -> gate type
+        # Model: dict pos -> gate_class type
+        self.init_pos = init_pos
         self.goal = goal
         self.Model = Model
         self.mode = mode  # 'train' or 'test'
         self.gate_list = gate_list or [1, 1, 1, 1]
         self.state = FourroomsGateState(0, 0, 0, False, 0, [], [], [])
         self.open = False
+        self.random_init = False if init_pos is not None else True
+        self.random_goal = False if goal is not None else True
         self.random_model = False if Model is not None else True
-
+        self.fix_gate_list = gate_list if gate_list else False
+    
     def reset(self):
         super().reset()
         # random chooce initial position and goal, in diagonal rooms
-        init_room = np.random.choice([0, 1, 2, 3])
-        init_pos = np.random.choice(rooms_pos[init_room])
-        goal_pos = np.random.choice(rooms_pos[3 - init_room])
-        self.state.position_n = init_pos
-        self.state.goal_n = goal_pos
-        self.goal = goal_pos
-
-        self.gate_list = [1, 1, 1, 1]
+        if self.random_init:
+            init_room = np.random.choice([0, 1, 2, 3])
+            init_pos = np.random.choice(rooms_pos[init_room])
+            self.init_pos = init_pos
+        else:
+            room_idx = [self.init_pos in room for room in rooms_pos]
+            init_room = int(np.where(room_idx)[0])
+        if self.random_goal:
+            goal_pos = np.random.choice(rooms_pos[3 - init_room])
+            self.goal = goal_pos
+        self.state.position_n = self.init_pos
+        self.state.goal_n = self.goal
+        
+        if self.fix_gate_list:
+            self.gate_list = deepcopy(self.fix_gate_list)
+        else:
+            self.gate_list = [1, 1, 1, 1]
         if self.random_model:
             if self.mode == 'train':
                 self.Model = np.random.choice(train_models)
@@ -75,11 +89,11 @@ class FourroomsGate(FourroomsBase):
                 self.Model = np.random.choice(test_models)
         self.state = FourroomsGateState.frombase(self.state, [], self.todecr(), self.gate_list)
         return self.state.to_obs
-
+    
     def todecr(self):
         descr = [self.Model[pos] for pos in gates_pos]
         return descr
-
+    
     def step(self, action):
         if self.state.done:
             raise Exception("Environment should be reseted")
@@ -88,11 +102,11 @@ class FourroomsGate(FourroomsBase):
             nextcell = tuple(currentcell + self.directions[action])
         except TypeError:
             nextcell = tuple(currentcell + self.directions[action[0]])
-
+        
         if not self.occupancy[nextcell] and self.Model.get(self.tostate[nextcell], None) != 'wall':
             currentcell = nextcell
         position_n = self.tostate[currentcell]
-
+        
         if position_n == self.state.goal_n:
             reward = 10
         elif position_n in gates_pos and self.gate_list[gates_pos.index(position_n)] == 1:
@@ -104,18 +118,19 @@ class FourroomsGate(FourroomsBase):
             self.state.gate_list = self.gate_list
         else:
             reward = -0.1
-
+        
         self.state.current_steps += 1
         self.state.done = (position_n == self.state.goal_n) or (self.state.current_steps >= self.max_epilen)
         self.state.position_n = position_n
         self.state.cum_reward.append(reward)
         info = {}
-
+        
         if self.state.done:
-            info = {'episode': {'r': np.sum(self.state.cum_reward), 'l': self.state.current_steps}}
-
+            info = {'episode': {'r': np.sum(self.state.cum_reward), 'l': self.state.current_steps},
+                    'win': True if self.state.position_n == self.state.goal_n else False}
+        
         return self.state.to_obs, reward, self.state.done, info
-
+    
     def render(self, mode=0):
         blocks = []
         for i in range(4):
