@@ -24,6 +24,11 @@ register(
 )
 
 register(
+    id='fourrooms_gate-v0',
+    entry_point='gridworld.envs:FourroomsGate'
+)
+
+register(
     id='ninerooms_base-v0',
     entry_point='gridworld.envs:NineroomsBase'
 )
