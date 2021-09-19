@@ -2,6 +2,7 @@
 Some utils for fourrooms
 """
 import itertools
+import numpy as np
 from copy import deepcopy
 
 LU_pos = [0, 1, 2, 3, 4, 10, 11, 12, 13, 14, 20, 21, 22, 23, 24, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45]
@@ -45,3 +46,49 @@ def value2model(model_value):
 
 train_models = [value2model(model_value) for model_value in train_models_value]
 test_models = [value2model(model_value) for model_value in test_models_value]
+
+gates_of_room = {
+    0: [25, 51],
+    1: [25, 62],
+    2: [51, 88],
+    3: [62, 88]
+}
+
+def best_return(Model, init_pos, goal):
+    init_room = np.where([init_pos in room for room in rooms_pos])[0][0]
+    goal_room = np.where([goal in room for room in rooms_pos])[0][0]
+    gate_list = [Model[k] for k in gates_pos]
+
+    if init_room + goal_room == 3:  # diag case
+        num_coins = gate_list.count('coin')
+        leftrooms = list(set(range(4)) - {init_room, goal_room})
+        gates_on_way = [[Model[k] for k in gates_of_room[leftrooms[i]]] for i in range(2)]
+        num_waters_list = []
+        for i in range(2):
+            if 'wall' in gates_on_way[i]:
+                num_waters_list.append(2)
+            else:
+                num_waters_list.append(gates_on_way[i].count('water'))
+        num_waters = min(num_waters_list)
+    else:  # adjacent case
+        init_gates_pos = set(gates_of_room[init_room])
+        goal_gates_pos = set(gates_of_room[goal_room])
+        common_gate = Model[(init_gates_pos & goal_gates_pos).pop()]
+        nearby_gates = [Model[k] for k in iter(init_gates_pos ^ goal_gates_pos)]
+        if not 'coin' in nearby_gates and common_gate != 'wall':  # wont reach the far gate
+            num_coins = 1 if common_gate == 'coin' else 0
+        else:
+            num_coins = gate_list.count('coin')
+        _gate_list = deepcopy(gate_list)
+        _gate_list.remove(common_gate)
+        gates_on_way = [[common_gate,], _gate_list]
+        num_water_list = []
+        for i in range(2):
+            if 'wall' in gates_on_way[i]:
+                num_water_list.append(3)
+            else:
+                num_water_list.append(gates_on_way[i].count('water'))
+        num_waters = min(num_water_list)
+    
+    return 10 * (1 + num_coins - num_waters)
+        
