@@ -111,7 +111,7 @@ class FourroomsGate(FourroomsBase):
             reward = 10
         elif position_n in gates_pos and self.gate_list[gates_pos.index(position_n)] == 1:
             if self.Model[position_n] == 'water':
-                reward = -1
+                reward = -10
             else:  # coin
                 reward = 10
                 self.gate_list[gates_pos.index(position_n)] = 0
@@ -126,8 +126,12 @@ class FourroomsGate(FourroomsBase):
         info = {}
         
         if self.state.done:
-            info = {'episode': {'r': np.sum(self.state.cum_reward), 'l': self.state.current_steps},
-                    'win': True if self.state.position_n == self.state.goal_n else False}
+            best = best_return(self.Model, self.init_pos, self.goal)
+            r = np.sum(self.state.cum_reward)
+            info = {'episode': {'r': r, 'l': self.state.current_steps},
+                    'win': True if self.state.position_n == self.state.goal_n else False,
+                    'best': best,
+                    'regret': best - r}
         
         return self.state.to_obs, reward, self.state.done, info
     
