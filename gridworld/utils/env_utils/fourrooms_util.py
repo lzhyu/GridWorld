@@ -54,12 +54,34 @@ gates_of_room = {
     3: [62, 88]
 }
 
+rooms_of_gates = {
+    25: [0, 1],
+    51: [0, 2],
+    62: [1, 3],
+    88: [2, 3]
+}
+
 def best_return(Model, init_pos, goal):
     init_room = np.where([init_pos in room for room in rooms_pos])[0][0]
     goal_room = np.where([goal in room for room in rooms_pos])[0][0]
     gate_list = [Model[k] for k in gates_pos]
-
-    if init_room + goal_room == 3:  # diag case
+    
+    if init_room == goal_room:
+        init_coin_gates = []
+        for gate in gates_of_room[init_room]:
+            if Model[gate] == 'coin':
+                init_coin_gates.append(gate)
+        if len(init_coin_gates) == 0:
+            num_coins = 0
+        elif len(init_coin_gates) == 1:
+            adj_room = (set(rooms_of_gates[init_coin_gates[0]]) - {init_room}).pop()
+            adj_gate = (set(gates_of_room[adj_room]) - {init_coin_gates[0]}).pop()
+            if Model[adj_gate] == 'coin':
+                num_coins = gate_list.count('coin')
+            else:
+                num_coins = 1
+        num_waters = 0
+    elif init_room + goal_room == 3:  # diag case
         num_coins = gate_list.count('coin')
         leftrooms = list(set(range(4)) - {init_room, goal_room})
         gates_on_way = [[Model[k] for k in gates_of_room[leftrooms[i]]] for i in range(2)]
